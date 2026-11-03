@@ -30,12 +30,14 @@ void JuceWebGpuProcessorEditor::parentHierarchyChanged()
 
     if (!mWebGpuWindow.initSurface(scale, width, height))
         return;
+    mNativeView.setInterceptsMouseClicks(false, false);
+    addAndMakeVisible(&mNativeView);
 #if JUCE_MAC
-    mMetalView.setInterceptsMouseClicks(false, false);
-    addAndMakeVisible(&mMetalView);
-    mMetalView.setView(mWebGpuWindow.getNativeView());
-    mMetalView.setBounds(getLocalBounds());
+    mNativeView.setView(mWebGpuWindow.getNativeView());
+#elif JUCE_WINDOWS
+    mNativeView.setHWND(mWebGpuWindow.getNativeView());
 #endif
+    mNativeView.setBounds(getLocalBounds());
     mStartTimeMs      = juce::Time::getMillisecondCounterHiRes();
     mStartTimeSet     = true;
     mConfiguredWidth  = width;

@@ -39,6 +39,19 @@ else (EMSCRIPTEN)
 
 endif (EMSCRIPTEN)
 
-# Does nothing, as this dawn-based distribution of WebGPU is statically linked
+# Dawn is built as a shared library (webgpu_dawn), so on Windows the DLL must sit
+# next to each built binary. Covers the JUCE format targets (<Target>_Standalone, ...).
 function(target_copy_webgpu_binaries Target)
+	if (WIN32)
+		foreach(Format Standalone VST3)
+			if (TARGET ${Target}_${Format})
+				add_custom_command(TARGET ${Target}_${Format} POST_BUILD
+					COMMAND ${CMAKE_COMMAND} -E copy_if_different
+						$<TARGET_FILE:webgpu_dawn>
+						$<TARGET_FILE_DIR:${Target}_${Format}>
+					COMMENT "Copying webgpu_dawn.dll next to ${Target}_${Format}"
+				)
+			endif()
+		endforeach()
+	endif()
 endfunction()

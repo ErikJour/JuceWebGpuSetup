@@ -11,11 +11,11 @@
 -(BOOL)acceptsFirstResponder      { return NO; }
 @end
 
-MetalSurface createMetalSurface(WGPUInstance instance, double contentsScale) {
+NativeSurface createNativeSurface(WGPUInstance instance, double contentsScale) {
   //==========================================================================
   //Creates native macOS surface to render into
   //==========================================================================
-  MetalSurface result                     = {};
+  NativeSurface result                    = {};
   AnimatedMetalView* view                 = [[AnimatedMetalView alloc] initWithFrame:NSMakeRect(0,
                                                                                                 0,
                                                                                                 1,

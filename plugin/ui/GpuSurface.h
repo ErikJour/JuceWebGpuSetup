@@ -5,13 +5,13 @@
 #pragma once
 #include "webgpu/webgpu.h"
 
-#if defined(__APPLE__)
-
-struct MetalSurface {
+//==========================================================================
+//Platform implementations: GpuSurface.mm (macOS), GpuSurface.cpp (Windows)
+//view is an NSView* on macOS and an HWND on Windows
+//==========================================================================
+struct NativeSurface {
     WGPUSurface surface = nullptr;
     void*       view    = nullptr;
 };
 
-MetalSurface createMetalSurface(WGPUInstance instance, double contentsScale);
-
-#endif
+NativeSurface createNativeSurface(WGPUInstance instance, double contentsScale);

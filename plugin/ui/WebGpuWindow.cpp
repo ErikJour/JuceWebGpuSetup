@@ -157,9 +157,9 @@ bool WebGpuWindow::initSurface(const double contentScale, uint32_t width, uint32
     //Settings for the window on top of Juce's provided window
     //==========================================================
     std::cout << "Init surface called with: " << width << " x " << height << std::endl;
-    const MetalSurface metal    = createMetalSurface(mInstance, contentScale);
-    mSurface                    = metal.surface;
-    mNativeView                 = metal.view;
+    const NativeSurface native  = createNativeSurface(mInstance, contentScale);
+    mSurface                    = native.surface;
+    mNativeView                 = native.view;
     if (!mSurface) { std::cerr << " Surface creation failed" << std::endl; return false;}
 
     applySurfaceConfig(width, height);

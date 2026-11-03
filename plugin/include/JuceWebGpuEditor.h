@@ -24,7 +24,9 @@ private:
     JuceWebGpuProcessor& processorRef;
     WebGpuWindow                mWebGpuWindow;
 #if JUCE_MAC
-    juce::NSViewComponent       mMetalView;
+    juce::NSViewComponent       mNativeView;
+#elif JUCE_WINDOWS
+    juce::HWNDComponent         mNativeView;
 #endif
     double   mStartTimeMs         = 0.0;
     bool     mStartTimeSet        = false;

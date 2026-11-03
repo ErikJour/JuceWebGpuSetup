@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include <array>
 #include <filesystem>
 #include <webgpu/webgpu.h>
 #include <utility>

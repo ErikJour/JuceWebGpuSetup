@@ -39,6 +39,9 @@ if(APPLE)
     target_link_libraries(JuceWebGpuSetup PRIVATE
             "-framework QuartzCore"
             "-framework Metal")
+elseif(WIN32)
+    target_sources(JuceWebGpuSetup PRIVATE
+            ui/GpuSurface.cpp)
 endif()
 
 target_sources(JuceWebGpuSetup
