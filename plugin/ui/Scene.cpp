@@ -314,7 +314,7 @@ void Scene::renderFrame() {
     //Load shaders
     //====================================================================================
     wgpuRenderPassEncoderSetPipeline(renderPass, mPipeline);
-    renderMeshes(renderPass);
+//    renderMeshes(renderPass);
     //====================================================================================
     //Finish the render
     //====================================================================================

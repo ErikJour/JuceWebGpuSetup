@@ -81,7 +81,7 @@ target_compile_definitions(JuceWebGpuSetup
 set(SHADER_FILES
         "shaders/vertex_main.wgsl"
         "shaders/fragment_main.wgsl"
-#        "shaders/common.wgsl"
+        "shaders/common.wgsl"
 #        "shaders/mat_plane.wgsl"
 #        "shaders/mat_sphere.wgsl"
 )

@@ -14,7 +14,7 @@ inline std::vector<std::filesystem::path> getShaderPaths() {
     std::vector<std::filesystem::path> shaderPaths = {
         dir + "/vertex_main.wgsl",
         dir + "/fragment_main.wgsl",
-//        dir + "/common.wgsl",
+        dir + "/common.wgsl",
 //        dir + "/mat_plane.wgsl",
 //        dir + "/mat_sphere.wgsl"
     };
