@@ -51,7 +51,4 @@ void JuceWebGpuProcessorEditor::timerCallback()
     }
 }
 
-void JuceWebGpuProcessorEditor::resized()
-{
-
-}
+void JuceWebGpuProcessorEditor::resized() {}

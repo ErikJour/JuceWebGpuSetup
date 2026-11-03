@@ -2,7 +2,7 @@
 
 #include "JuceWebGpuProcessor.h"
 #include "WebGpuWindow.h"
-#define WIDTH 800
+#define WIDTH  450
 #define HEIGHT 450
 
 //==============================================================================

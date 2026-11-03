@@ -205,7 +205,6 @@ bool WebGpuWindow::initialize()
     if (!mScene.createShader()) return false;
     configurePipeline();
     mScene.configureVertexLayout();
-    mScene.initializeScene();
     return true;
 }
 

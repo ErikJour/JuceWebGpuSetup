@@ -5,26 +5,24 @@
 #include "Scene.h"
 #include <iostream>
 #include <ostream>
-//#include "SphereGeometry.h"
 //===================================================================================
 //Setup
 //====================================================================================
-void Scene::init(WGPUDevice device, WGPUQueue queue)                          { mDevice = device; mQueue = queue;        }
-void Scene::setSurface(const WGPUSurface surface)                             { mSurface                 = surface;      }
-void Scene::setSurfaceFormat(const WGPUTextureFormat format)                  { mSurfaceFormat           = format;       }
-void Scene::setSurfaceSize(const uint32_t width, const uint32_t height)       { mWidth = width; mHeight  = height;       }
-void Scene::setShaderModule(const WGPUShaderModule shaderModule)              { mShaderModule            = shaderModule; }
-void Scene::setPipelineDesc(const WGPURenderPipelineDescriptor &pipelineDesc) { mPipelineDesc            = pipelineDesc; }
+void Scene::init(WGPUDevice device, WGPUQueue queue)                          { mDevice        = device;
+                                                                                mQueue         = queue;        }
+void Scene::setSurface(const WGPUSurface surface)                             { mSurface       = surface;      }
+void Scene::setSurfaceFormat(const WGPUTextureFormat format)                  { mSurfaceFormat = format;       }
+void Scene::setSurfaceSize(const uint32_t width, const uint32_t height)       { mWidth         = width;
+                                                                                mHeight        = height;       }
+void Scene::setShaderModule(const WGPUShaderModule shaderModule)              { mShaderModule  = shaderModule; }
+void Scene::setPipelineDesc(const WGPURenderPipelineDescriptor &pipelineDesc) { mPipelineDesc  = pipelineDesc; }
 void Scene::terminate()
 {
-    if (mPlaneIndexBuffer)   { wgpuBufferRelease(mPlaneIndexBuffer);                           mPlaneIndexBuffer   = nullptr; }
-    if (mPlaneVertexBuffer)  { wgpuBufferRelease(mPlaneVertexBuffer);                          mPlaneVertexBuffer  = nullptr; }
-    if (mSphereIndexBuffer)  { wgpuBufferRelease(mSphereIndexBuffer);                          mSphereIndexBuffer  = nullptr; }
-    if (mSphereVertexBuffer) { wgpuBufferRelease(mSphereVertexBuffer);                         mSphereVertexBuffer = nullptr; }
-    if (mBindGroup)          { wgpuBindGroupRelease(mBindGroup);                               mBindGroup          = nullptr; }
-    if (mUniformBuffer)      { wgpuBufferRelease(mUniformBuffer);                              mUniformBuffer      = nullptr; }
-    if (mPipeline)           { wgpuRenderPipelineRelease(mPipeline);                           mPipeline           = nullptr; }
-    if (mSurface)            { wgpuSurfaceUnconfigure(mSurface); wgpuSurfaceRelease(mSurface); mSurface            = nullptr; }
+    if (mBindGroup)          { wgpuBindGroupRelease(mBindGroup);        mBindGroup          = nullptr; }
+    if (mUniformBuffer)      { wgpuBufferRelease(mUniformBuffer);          mUniformBuffer      = nullptr; }
+    if (mPipeline)           { wgpuRenderPipelineRelease(mPipeline); mPipeline           = nullptr; }
+    if (mSurface)            { wgpuSurfaceUnconfigure(mSurface);
+                                wgpuSurfaceRelease(mSurface);             mSurface            = nullptr; }
 }
 //===================================================================================
 //Shaders
@@ -90,7 +88,7 @@ void Scene::configureVertexLayout() {
 bool Scene::createPipeline()
 {
     //====================================================================================
-    //Configure communication from the CPU to the GPU
+    //Here, we configure communication from the CPU to the GPU
     //====================================================================================
     //Release bind group, uniform buffer, and pipeline so we can reset these
     //====================================================================================
@@ -232,26 +230,6 @@ std::pair<WGPUSurfaceTexture, WGPUTextureView> Scene::getNextSurfaceViewData() c
     return { surfaceTexture, targetView };
 }
 
-void Scene::setUniforms()
-{
-
-    mUniforms.pressed = mMouseClicked;
-
-    mUniforms.buttonX = mButtonOffsetX;
-
-    for (uint32_t m = 0; m < materialCount; m++) {
-        mUniforms.materialId = m;
-        wgpuQueueWriteBuffer(mQueue, mUniformBuffer,
-                             m * mUniformStride, &mUniforms, sizeof(MyUniforms));
-    }
-}
-
-void Scene::renderMeshes(const WGPURenderPassEncoder renderPass) const {
-
-    setMeshBuffers(mPlaneVertexBuffer, mPlaneIndexBuffer, mPlaneIndexCount, MAT_PLANE, renderPass);
-    setMeshBuffers(mSphereVertexBuffer, mSphereIndexBuffer, mSphereIndexCount, MAT_SPHERE, renderPass);
-}
-
 void Scene::renderFrame() {
     //====================================================================================
     //Add reloadable shader setup here
@@ -265,9 +243,8 @@ void Scene::renderFrame() {
 #endif
     if (!mPipeline) return;
     if (!mSurface)  return;
-    setUniforms();
     //====================================================================================
-    //Get the surface texture and the target view
+    //Ask for the surface texture and the target view for the frame
     //====================================================================================
     auto [ surfaceTexture, targetView ] = getNextSurfaceViewData();
     wgpuTextureRelease(surfaceTexture.texture);
@@ -284,10 +261,10 @@ void Scene::renderFrame() {
     colorAttachment.view          = targetView;
     colorAttachment.loadOp        = WGPULoadOp_Clear;
     colorAttachment.storeOp       = WGPUStoreOp_Store;
-    colorAttachment.clearValue = { 0.5, 0.5, 0.5, 1.0 };
+    colorAttachment.clearValue    = { 0.5, 0.5, 0.5, 1.0 };
     colorAttachment.depthSlice    = WGPU_DEPTH_SLICE_UNDEFINED;
     //====================================================================================
-    //Setup master redner pass
+    //Setup master render pass
     //====================================================================================
     WGPURenderPassDescriptor renderPassDesc = {};
     renderPassDesc.label                    = WGPU_STR("Render pass");
@@ -338,28 +315,11 @@ void Scene::renderFrame() {
     wgpuCommandBufferRelease(command);
     wgpuTextureViewRelease(targetView);
     //====================================================================================
-    //Present frame
+    //Present the next texture of the swap chain
     //====================================================================================
     wgpuSurfacePresent(mSurface);
     wgpuDeviceTick(mDevice);
 }
 
-void Scene::initializeScene() {
-
-}
-
-//===================================================================================
-//Meshes
-//====================================================================================
-void Scene::setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint32_t indexCount, uint32_t material, WGPURenderPassEncoder renderPass) const
-{
-    if (vertexBuffer && indexBuffer && indexCount > 0) {
-        const uint32_t offset = material * mUniformStride;
-        wgpuRenderPassEncoderSetBindGroup(renderPass, 0, mBindGroup, 1, &offset);
-        wgpuRenderPassEncoderSetVertexBuffer(renderPass, 0, vertexBuffer, 0, wgpuBufferGetSize(vertexBuffer));
-        wgpuRenderPassEncoderSetIndexBuffer(renderPass, indexBuffer, WGPUIndexFormat_Uint16, 0, wgpuBufferGetSize(indexBuffer));
-        wgpuRenderPassEncoderDrawIndexed(renderPass, indexCount, 1, 0, 0, 0);
-    }
-}
 
 

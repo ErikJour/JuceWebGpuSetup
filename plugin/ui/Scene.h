@@ -11,7 +11,6 @@
 #include "ResourceManager.h"
 #include "MyUniforms.h"
 #include "shaderPaths.h"
-//#include "PlaneGeometry.h"
 
 #define WGPU_STR(s) WGPUStringView { s, sizeof(s) -1 };
 static constexpr uint32_t materialCount = 2;
@@ -35,25 +34,14 @@ public:
     void setPipelineDesc(const WGPURenderPipelineDescriptor &pipelineDesc);
     bool createPipeline();
     void updateTexture(uint32_t width, uint32_t height);
-    void setUniforms();
-    void renderMeshes(WGPURenderPassEncoder renderPass) const;
     void renderFrame();
-    void initializeScene();
-    //===================================================================================
-    //Mesh Work
-    //===================================================================================
-    void setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint32_t indexCount, uint32_t material, WGPURenderPassEncoder renderPass) const;
-    //===================================================================================
-    //Mouse and Key Input
-    //===================================================================================
     //===================================================================================
     //Public Getter Functions
     //===================================================================================
-    std::pair<WGPUSurfaceTexture, WGPUTextureView> getNextSurfaceViewData() const;
-    WGPUFragmentState    getFragmentState() const { return mFragmentState; }
-    WGPUColorTargetState getColorTarget()   const { return mColorTarget; }
-    WGPUBlendState       getBlendState()    const { return mBlendState; }
-
+    [[nodiscard]] std::pair<WGPUSurfaceTexture, WGPUTextureView> getNextSurfaceViewData() const;
+    [[nodiscard]] WGPUFragmentState    getFragmentState() const { return mFragmentState; }
+    [[nodiscard]] WGPUColorTargetState getColorTarget()   const { return mColorTarget; }
+    [[nodiscard]] WGPUBlendState       getBlendState()    const { return mBlendState; }
 
 private:
     WGPUFragmentState            mFragmentState             = {};
@@ -71,7 +59,6 @@ private:
     std::array<WGPUVertexAttribute, 3> mVertexAttributes    = {};
     std::vector<WGPUVertexBufferLayout> mVertexBufferLayout = {};
     uint32_t                     mUniformStride             = 0;
-    MyUniforms                   mUniforms                  = {};
     WGPURenderPipelineDescriptor mPipelineDesc              = {};
     WGPUShaderModule             mShaderModule              = {};
     std::vector<std::filesystem::path> mShaderPaths;
@@ -79,18 +66,5 @@ private:
     WGPUTextureView              mTextureView               = nullptr;
     WGPUTexture                  mTexture                   = nullptr;
 
-    //Mesh Buffers
-    WGPUBuffer                   mPlaneVertexBuffer         = nullptr;
-    WGPUBuffer                   mPlaneIndexBuffer          = nullptr;
-    uint32_t                     mPlaneIndexCount           = 0;
-    WGPUBuffer                   mSphereVertexBuffer        = nullptr;
-    WGPUBuffer                   mSphereIndexBuffer         = nullptr;
-    uint32_t                     mSphereIndexCount          = 0;
-
-    //Input
-    float mMouseX         = 0.0f;
-    float mMouseY         = 0.0f;
-    bool  mMouseClicked   = false;
-    float mButtonOffsetX  = 0.0f;
 };
 
