@@ -284,7 +284,7 @@ void Scene::renderFrame() {
     colorAttachment.view          = targetView;
     colorAttachment.loadOp        = WGPULoadOp_Clear;
     colorAttachment.storeOp       = WGPUStoreOp_Store;
-    colorAttachment.clearValue = { 0.0, 0.0, 0.0, 1.0 };
+    colorAttachment.clearValue = { 0.5, 0.5, 0.5, 1.0 };
     colorAttachment.depthSlice    = WGPU_DEPTH_SLICE_UNDEFINED;
     //====================================================================================
     //Setup master redner pass
