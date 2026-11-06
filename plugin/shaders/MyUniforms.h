@@ -8,8 +8,11 @@
 #pragma once
 #include <cstdint>
 
+static constexpr uint32_t MAT_ONOFFBUTTON  = 0;
+
 struct MyUniforms {
     float    time;
+    uint32_t materialId;
     float    pressed;
     float    buttonX;
 };

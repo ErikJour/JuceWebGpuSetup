@@ -10,6 +10,11 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     var out      : VertexOutput;
     var position = in.position;
 
+    switch u.materialId {
+            case MAT_ONOFFBUTTON:  { out.clipPos = vertexOnOff        (&position); }
+            default:               { out.clipPos = projectPerspective (position);  }
+        }
+
     out.clipPos = projectPerspective  (position);
     out.color    = in.color;
     out.worldPos = position;

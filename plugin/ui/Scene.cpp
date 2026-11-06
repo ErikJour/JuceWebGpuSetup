@@ -18,9 +18,11 @@ void Scene::setShaderModule(const WGPUShaderModule shaderModule)              { 
 void Scene::setPipelineDesc(const WGPURenderPipelineDescriptor &pipelineDesc) { mPipelineDesc  = pipelineDesc; }
 void Scene::terminate()
 {
-    if (mBindGroup)          { wgpuBindGroupRelease(mBindGroup);        mBindGroup          = nullptr; }
-    if (mUniformBuffer)      { wgpuBufferRelease(mUniformBuffer);          mUniformBuffer      = nullptr; }
-    if (mPipeline)           { wgpuRenderPipelineRelease(mPipeline); mPipeline           = nullptr; }
+    if (mOnOffButtonIndexBuffer)  { wgpuBufferRelease(mOnOffButtonIndexBuffer);  mOnOffButtonIndexBuffer  = nullptr; }
+    if (mOnOffButtonVertexBuffer) { wgpuBufferRelease(mOnOffButtonVertexBuffer); mOnOffButtonVertexBuffer = nullptr; }
+    if (mBindGroup)          { wgpuBindGroupRelease(mBindGroup);              mBindGroup          = nullptr; }
+    if (mUniformBuffer)      { wgpuBufferRelease(mUniformBuffer);                mUniformBuffer      = nullptr; }
+    if (mPipeline)           { wgpuRenderPipelineRelease(mPipeline);       mPipeline           = nullptr; }
     if (mSurface)            { wgpuSurfaceUnconfigure(mSurface);
                                 wgpuSurfaceRelease(mSurface);             mSurface            = nullptr; }
 }
@@ -230,6 +232,15 @@ std::pair<WGPUSurfaceTexture, WGPUTextureView> Scene::getNextSurfaceViewData() c
     return { surfaceTexture, targetView };
 }
 
+void Scene::setUniforms()
+{
+    for (uint32_t m = 0; m < materialCount; m++) {
+        mUniforms.materialId = m;
+        wgpuQueueWriteBuffer(mQueue, mUniformBuffer,
+                             m * mUniformStride, &mUniforms, sizeof(MyUniforms));
+    }
+}
+
 void Scene::renderFrame() {
     //====================================================================================
     //Add reloadable shader setup here
@@ -291,7 +302,7 @@ void Scene::renderFrame() {
     //Load shaders
     //====================================================================================
     wgpuRenderPassEncoderSetPipeline(renderPass, mPipeline);
-//    renderMeshes(renderPass);
+    renderMeshes(renderPass);
     //====================================================================================
     //Finish the render
     //====================================================================================
@@ -319,6 +330,45 @@ void Scene::renderFrame() {
     //====================================================================================
     wgpuSurfacePresent(mSurface);
     wgpuDeviceTick(mDevice);
+}
+
+void Scene::setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint32_t indexCount, uint32_t material, WGPURenderPassEncoder renderPass) const
+{
+    if (vertexBuffer && indexBuffer && indexCount > 0) {
+        const uint32_t offset = material * mUniformStride;
+        wgpuRenderPassEncoderSetBindGroup(renderPass, 0, mBindGroup, 1, &offset);
+        wgpuRenderPassEncoderSetVertexBuffer(renderPass, 0, vertexBuffer, 0, wgpuBufferGetSize(vertexBuffer));
+        wgpuRenderPassEncoderSetIndexBuffer(renderPass, indexBuffer, WGPUIndexFormat_Uint16, 0, wgpuBufferGetSize(indexBuffer));
+        wgpuRenderPassEncoderDrawIndexed(renderPass, indexCount, 1, 0, 0, 0);
+    }
+}
+
+void Scene::initializeScene() {
+
+    initializeOnOffButton();
+}
+
+void Scene::renderMeshes(const WGPURenderPassEncoder renderPass) const {
+
+    setMeshBuffers(mOnOffButtonVertexBuffer, mOnOffButtonIndexBuffer, mOnOffButtonIndexCount, MAT_ONOFFBUTTON, renderPass);
+}
+
+void Scene::initializeOnOffButton() {
+    std::cout << "Initializing OnOff Button" << std::endl;
+    std::vector<SphereVertex> vertices;
+    std::vector<SphereIndex>  indices;
+
+    SphereGeometry::buildSphere(vertices, indices);
+    mOnOffButtonIndexCount = static_cast<uint32_t>(indices.size());
+    WGPUBufferDescriptor bd{};
+    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
+    bd.size = vertices.size() * sizeof(SphereVertex);
+    mOnOffButtonVertexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
+    wgpuQueueWriteBuffer(mQueue, mOnOffButtonVertexBuffer, 0, vertices.data(), bd.size);
+    bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
+    bd.size = indices.size() * sizeof(SphereIndex);
+    mOnOffButtonIndexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
+    wgpuQueueWriteBuffer(mQueue, mOnOffButtonIndexBuffer, 0, indices.data(), bd.size);
 }
 
 

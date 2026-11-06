@@ -12,6 +12,7 @@
 #include "ResourceManager.h"
 #include "MyUniforms.h"
 #include "shaderPaths.h"
+#include "SphereGeometry.h"
 
 #define WGPU_STR(s) WGPUStringView { s, sizeof(s) -1 };
 static constexpr uint32_t materialCount = 2;
@@ -35,7 +36,16 @@ public:
     void setPipelineDesc(const WGPURenderPipelineDescriptor &pipelineDesc);
     bool createPipeline();
     void updateTexture(uint32_t width, uint32_t height);
+    void setUniforms();
+
+    void initializeScene() ;
     void renderFrame();
+    //===================================================================================
+    //Mesh Work
+    //===================================================================================
+    void setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint32_t indexCount, uint32_t material, WGPURenderPassEncoder renderPass) const;
+    void renderMeshes(WGPURenderPassEncoder renderPass) const;
+    void initializeOnOffButton();
     //===================================================================================
     //Public Getter Functions
     //===================================================================================
@@ -66,6 +76,14 @@ private:
     std::filesystem::file_time_type mLastShaderWriteTime;
     WGPUTextureView              mTextureView               = nullptr;
     WGPUTexture                  mTexture                   = nullptr;
+    MyUniforms                   mUniforms                  = {};
+
+    //================
+    //Geometry buffers
+    //================
+    WGPUBuffer                   mOnOffButtonVertexBuffer        = nullptr;
+    WGPUBuffer                   mOnOffButtonIndexBuffer         = nullptr;
+    uint32_t                     mOnOffButtonIndexCount          = 0;
 
 };
 

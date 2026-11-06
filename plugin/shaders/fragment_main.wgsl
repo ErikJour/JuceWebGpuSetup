@@ -1,6 +1,9 @@
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
 
-    return vec4f(1.0, 1.0, 1.0, 1.0);
+    switch u.materialId {
+             case MAT_ONOFFBUTTON:  { return fragmentOnOff(in);          }
+             default:               { return vec4f(1.0, 0.0, 1.0, 1.0);  }
+        }
 
 }
