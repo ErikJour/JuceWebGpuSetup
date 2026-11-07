@@ -13,6 +13,7 @@
 #include "MyUniforms.h"
 #include "shaderPaths.h"
 #include "SphereGeometry.h"
+#include "PlaneGeometry.h"
 
 #define WGPU_STR(s) WGPUStringView { s, sizeof(s) -1 };
 static constexpr uint32_t materialCount = 2;
@@ -49,6 +50,7 @@ public:
     void setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint32_t indexCount, uint32_t material, WGPURenderPassEncoder renderPass) const;
     void renderMeshes(WGPURenderPassEncoder renderPass) const;
     void initializeOnOffButton();
+    void initializePlane();
     //===================================================================================
     //Public Getter Functions
     //===================================================================================
@@ -86,6 +88,9 @@ private:
     WGPUBuffer                   mOnOffButtonVertexBuffer        = nullptr;
     WGPUBuffer                   mOnOffButtonIndexBuffer         = nullptr;
     uint32_t                     mOnOffButtonIndexCount          = 0;
+    WGPUBuffer                   mPlaneVertexBuffer         = nullptr;
+    WGPUBuffer                   mPlaneIndexBuffer          = nullptr;
+    uint32_t                     mPlaneIndexCount           = 0;
     //Interactions
     bool buttonClicked = false;
 

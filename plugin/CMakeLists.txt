@@ -51,6 +51,7 @@ target_sources(JuceWebGpuSetup
         ui/webGpuWindow.cpp
         ui/Scene.cpp
         geometries/SphereGeometry.cpp
+        geometries/PlaneGeometry.cpp
 )
 
 target_include_directories(JuceWebGpuSetup
@@ -88,6 +89,8 @@ set(SHADER_FILES
         "shaders/fragment_main.wgsl"
         "shaders/common.wgsl"
         "shaders/mat_onOffButton.wgsl"
+        "shaders/mat_vizPlane.wgsl"
+
 )
 
 set(SHADER_SOURCE "")

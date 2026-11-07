@@ -1,22 +1,23 @@
+
+fn projectPerspective(worldPos: vec3f) -> vec4f { return vec4f(worldPos, 1.0); }
+
 //==============
 //Vertex Shader
 //==============
-fn projectPerspective(worldPos: vec3f) -> vec4f {
-    return vec4f(worldPos, 1.0);
-}
-
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
 
     var out      : VertexOutput;
     var position = in.position;
 
+    //We call different vertex functions depending on the material.
     switch u.materialId {
             case MAT_ONOFFBUTTON:  { out.clipPos = vertexOnOff        (&position); }
+            case MAT_PLANE:        { out.clipPos = vertexPlane        (&position); }
             default:               { out.clipPos = projectPerspective (position);  }
         }
 
-    out.clipPos = projectPerspective  (position);
+    out.clipPos  = projectPerspective (position);
     out.color    = in.color;
     out.worldPos = position;
     out.normal   = in.normal;

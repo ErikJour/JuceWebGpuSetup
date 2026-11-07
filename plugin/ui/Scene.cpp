@@ -18,6 +18,8 @@ void Scene::setShaderModule(const WGPUShaderModule shaderModule)              { 
 void Scene::setPipelineDesc(const WGPURenderPipelineDescriptor &pipelineDesc) { mPipelineDesc  = pipelineDesc; }
 void Scene::terminate()
 {
+    if (mPlaneIndexBuffer)   { wgpuBufferRelease(mPlaneIndexBuffer);       mPlaneIndexBuffer   = nullptr; }
+    if (mPlaneVertexBuffer)  { wgpuBufferRelease(mPlaneVertexBuffer);      mPlaneVertexBuffer  = nullptr; }
     if (mOnOffButtonIndexBuffer)  { wgpuBufferRelease(mOnOffButtonIndexBuffer);  mOnOffButtonIndexBuffer  = nullptr; }
     if (mOnOffButtonVertexBuffer) { wgpuBufferRelease(mOnOffButtonVertexBuffer); mOnOffButtonVertexBuffer = nullptr; }
     if (mBindGroup)          { wgpuBindGroupRelease(mBindGroup);              mBindGroup          = nullptr; }
@@ -349,11 +351,24 @@ void Scene::setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint
 void Scene::initializeScene() {
 
     initializeOnOffButton();
+    initializePlane();
 }
 
 void Scene::renderMeshes(const WGPURenderPassEncoder renderPass) const {
 
-    setMeshBuffers(mOnOffButtonVertexBuffer, mOnOffButtonIndexBuffer, mOnOffButtonIndexCount, MAT_ONOFFBUTTON, renderPass);
+    //Add the on / off button
+    setMeshBuffers(mOnOffButtonVertexBuffer,
+                   mOnOffButtonIndexBuffer,
+                   mOnOffButtonIndexCount,
+                   MAT_ONOFFBUTTON,
+                   renderPass);
+
+    //Add the plane for visualizing the audio output
+    setMeshBuffers(mPlaneVertexBuffer,
+                   mPlaneIndexBuffer,
+                   mPlaneIndexCount,
+                   MAT_PLANE,
+                   renderPass);
 }
 
 void Scene::initializeOnOffButton() {
@@ -372,6 +387,25 @@ void Scene::initializeOnOffButton() {
     bd.size = indices.size() * sizeof(SphereIndex);
     mOnOffButtonIndexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
     wgpuQueueWriteBuffer(mQueue, mOnOffButtonIndexBuffer, 0, indices.data(), bd.size);
+}
+
+void Scene::initializePlane()
+{
+    std::cout << "Initializing plane" << std::endl;
+    std::vector<PlaneVertex> vertices;
+    std::vector<planeIndex>  indices;
+
+    PlaneGeometry::buildPlane(vertices, indices, 1, 1, 1.f, 16, 16);
+    WGPUBufferDescriptor bd{};
+    mPlaneIndexCount   = static_cast<uint32_t>(indices.size());
+    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
+    bd.size            = vertices.size() * sizeof(PlaneVertex);
+    mPlaneVertexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
+    wgpuQueueWriteBuffer(mQueue, mPlaneVertexBuffer, 0, vertices.data(), bd.size);
+    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
+    bd.size            = indices.size() * sizeof(planeIndex);
+    mPlaneIndexBuffer  = wgpuDeviceCreateBuffer(mDevice, &bd);
+    wgpuQueueWriteBuffer(mQueue, mPlaneIndexBuffer, 0, indices.data(), bd.size);
 }
 
 void Scene::setClick (uint32_t x,uint32_t y)

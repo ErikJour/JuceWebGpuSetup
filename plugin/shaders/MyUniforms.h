@@ -6,12 +6,12 @@
 #include <cstdint>
 
 static constexpr uint32_t MAT_ONOFFBUTTON = 0;
+static constexpr uint32_t MAT_PLANE       = 1;
 
 struct MyUniforms {
     float    time;
     uint32_t materialId;
-    float     pressed;
-    float    buttonX;
+    float    pressed;
 };
 
 static_assert(sizeof(MyUniforms) % 4 == 0);
