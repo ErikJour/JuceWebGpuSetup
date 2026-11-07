@@ -11,9 +11,6 @@ fn vertexTopLeftCube (position: ptr<function, vec3f>) -> vec4f {
 
 fn fragmentTopLeftCube (in: VertexOutput) -> vec4f {
 
-    //Our off color will be red and our clicked color will be green
-    let wave = sin(u.time * 5.0 * u.pressed);
-    let baseColor = vec3f(0.05, (0.3 * wave) + 0.3, 0.04);
-
-   return vec4f(baseColor, 1.0);
+   if (u.tick == 0) { return vec4f(0.35, 0.6, 0.2, 1.0); }
+   else { return vec4f(0.0, 0.0, 0.0, 1.0); }
 }

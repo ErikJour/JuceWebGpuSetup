@@ -53,9 +53,13 @@ void JuceWebGpuProcessorEditor::timerCallback()
         mWebGpuWindow.getScene().renderFrame(elapsed);
     }
     //I want to pass a flag every 45 frames to my graphics engine to update the sequencer
-    if (currentFrame % 45 == 0) {
-        std::cout << "This is our trigger at frame:" << currentFrame << std::endl;
-        //Pass our change flag here, this will highlight different shaders
+    //This can also be a juce audio parameter int that triggers specific notes
+    if (mWebGpuWindow.getScene().buttonClicked && currentFrame % 45 == 0) {
+
+        mWebGpuWindow.getScene().getSequencerInterval(tick);
+
+        if (tick < 5) { ++tick; }
+        else { tick = 0; }
     }
     currentFrame++;
 }
@@ -68,7 +72,6 @@ void JuceWebGpuProcessorEditor::mouseDown(const juce::MouseEvent& event)
     const auto yPos = static_cast<uint32_t>(event.y);
 
     mWebGpuWindow.getScene().setClick(xPos, yPos);
-
 
 }
 

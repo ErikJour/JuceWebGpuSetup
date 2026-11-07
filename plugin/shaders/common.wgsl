@@ -10,6 +10,7 @@ struct Uniforms {
     time:       f32,
     materialId: u32,
     pressed:    f32,
+    tick:       u32
 }
 
 @group(0) @binding(0) var<uniform> u: Uniforms;

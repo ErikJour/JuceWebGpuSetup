@@ -43,7 +43,7 @@ public:
     void renderFrame(float time);
     //==================
     void setClick (uint32_t x,uint32_t y);
-
+    void getSequencerInterval(uint32_t interval);
     //===================================================================================
     //Mesh Work
     //===================================================================================
@@ -56,9 +56,6 @@ public:
     void initializeBottomLeftPlane();
     void initializeBottomCenterPlane();
     void initializeBottomRightPlane();
-
-
-
     //===================================================================================
     //Public Getter Functions
     //===================================================================================
@@ -66,6 +63,9 @@ public:
     [[nodiscard]] WGPUFragmentState    getFragmentState() const { return mFragmentState; }
     [[nodiscard]] WGPUColorTargetState getColorTarget()   const { return mColorTarget; }
     [[nodiscard]] WGPUBlendState       getBlendState()    const { return mBlendState; }
+
+    bool buttonClicked = false;
+
 
 private:
     WGPUFragmentState            mFragmentState             = {};
@@ -115,7 +115,6 @@ private:
     WGPUBuffer                   mBottomRightIndexBuffer          = nullptr;
     uint32_t                     mBottomRightIndexCount           = 0;
     //Interactions
-    bool buttonClicked = false;
 
 };
 

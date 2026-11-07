@@ -17,7 +17,7 @@ struct MyUniforms {
     float    time;
     uint32_t materialId;
     float    pressed;
-    uint32_t padding[5];
+    uint32_t tick;
 };
 
 static_assert(sizeof(MyUniforms) % 4 == 0);

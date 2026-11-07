@@ -562,5 +562,12 @@ void Scene::setClick (uint32_t x,uint32_t y)
 
 }
 
+void Scene::getSequencerInterval(uint32_t interval)
+{
+    std::cout << "This is our trigger at frame:" << interval << std::endl;
+    mUniforms.tick = interval;
+}
+
+
 
 
