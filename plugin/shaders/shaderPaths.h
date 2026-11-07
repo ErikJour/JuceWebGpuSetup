@@ -16,7 +16,12 @@ inline std::vector<std::filesystem::path> getShaderPaths() {
         dir + "/fragment_main.wgsl",
         dir + "/common.wgsl",
         dir + "/mat_onOffButton.wgsl",
-        dir + "/mat_vizPlane.wgsl"
+        dir + "/topLeftCube.wgsl",
+        dir + "/topCenterCube.wgsl",
+        dir + "/topRightCube.wgsl",
+        dir + "/bottomLeftCube.wgsl",
+        dir + "/bottomCenterCube.wgsl",
+        dir + "/bottomRightCube.wgsl"
 
 
     };

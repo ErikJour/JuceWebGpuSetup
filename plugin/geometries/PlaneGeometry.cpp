@@ -40,7 +40,7 @@ void PlaneGeometry::buildPlane(std::vector<PlaneVertex>& vertices, std::vector<p
             float x = static_cast<float>(ix) * segmentWidth - widthHalf;
 
             vertices.push_back(
-                    { x, -y * shrinkY, 0.0f,
+                    { x * shrinkY, -y * shrinkY, 0.0f,
                       0.0f, 0.0f, 1.0f,
                       1.0f, 1.0f, 1.0f }
             );

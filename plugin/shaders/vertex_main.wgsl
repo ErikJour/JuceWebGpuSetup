@@ -12,9 +12,14 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 
     //Material-dependant vertex functions.
     switch u.materialId {
-            case MAT_ONOFFBUTTON:  { out.clipPos = vertexOnOff        (&position); }
-            case MAT_PLANE:        { out.clipPos = vertexPlane        (&position); }
-            default:               { out.clipPos = projectPerspective (position);  }
+            case MAT_ONOFFBUTTON:  { out.clipPos = vertexOnOff        (&position);  }
+            case TOPLEFTCUBE:      { out.clipPos = vertexTopLeftCube  (&position);  }
+            case TOPCENTERCUBE:    { out.clipPos = vertexTopCenterCube (&position); }
+            case TOPRIGHTCUBE:     { out.clipPos = vertexTopRightCube (&position);  }
+            case BOTTOMLEFTCUBE:   { out.clipPos = vertexBottomLeftCube (&position);  }
+            case BOTTOMCENTERCUBE:     { out.clipPos = vertexBottomCenterCube (&position);  }
+            case BOTTOMRIGHTCUBE:   { out.clipPos = vertexBottomRightCube (&position);  }
+            default:               { out.clipPos = projectPerspective (position);   }
         }
 
     out.clipPos  = projectPerspective (position);

@@ -89,7 +89,12 @@ set(SHADER_FILES
         "shaders/fragment_main.wgsl"
         "shaders/common.wgsl"
         "shaders/mat_onOffButton.wgsl"
-        "shaders/mat_vizPlane.wgsl"
+        "shaders/topLeftCube.wgsl"
+        "shaders/topCenterCube.wgsl"
+        "shaders/topRightCube.wgsl"
+        "shaders/bottomLeftCube.wgsl"
+        "shaders/bottomCenterCube.wgsl"
+        "shaders/bottomRightCube.wgsl"
 
 )
 

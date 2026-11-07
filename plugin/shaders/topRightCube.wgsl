@@ -1,13 +1,15 @@
 //===================================
 //Plane Shader
 //===================================
-fn vertexPlane (position: ptr<function, vec3f>) -> vec4f {
+fn vertexTopRightCube (position: ptr<function, vec3f>) -> vec4f {
 
     let wave = sin(u.time);
+    position.y += 0.25;
+    position.x += 0.35;
     return vec4f(*position, 1.0);
 }
 
-fn fragmentPlane (in: VertexOutput) -> vec4f {
+fn fragmentTopRightCube (in: VertexOutput) -> vec4f {
 
     //Our off color will be red and our clicked color will be green
     let wave = sin(u.time * 5.0 * u.pressed);

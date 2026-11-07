@@ -16,7 +16,7 @@
 #include "PlaneGeometry.h"
 
 #define WGPU_STR(s) WGPUStringView { s, sizeof(s) -1 };
-static constexpr uint32_t materialCount = 2;
+static constexpr uint32_t materialCount = 7;
 
 class Scene {
 public:
@@ -39,7 +39,7 @@ public:
     void updateTexture(uint32_t width, uint32_t height);
     void setUniforms();
 
-    void initializeScene() ;
+    void initializeScene();
     void renderFrame(float time);
     //==================
     void setClick (uint32_t x,uint32_t y);
@@ -50,7 +50,15 @@ public:
     void setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint32_t indexCount, uint32_t material, WGPURenderPassEncoder renderPass) const;
     void renderMeshes(WGPURenderPassEncoder renderPass) const;
     void initializeOnOffButton();
-    void initializePlane();
+    void initializeTopLeftPlane();
+    void initializeTopCenterPlane();
+    void initializeTopRightPlane();
+    void initializeBottomLeftPlane();
+    void initializeBottomCenterPlane();
+    void initializeBottomRightPlane();
+
+
+
     //===================================================================================
     //Public Getter Functions
     //===================================================================================
@@ -88,9 +96,24 @@ private:
     WGPUBuffer                   mOnOffButtonVertexBuffer        = nullptr;
     WGPUBuffer                   mOnOffButtonIndexBuffer         = nullptr;
     uint32_t                     mOnOffButtonIndexCount          = 0;
-    WGPUBuffer                   mPlaneVertexBuffer         = nullptr;
-    WGPUBuffer                   mPlaneIndexBuffer          = nullptr;
-    uint32_t                     mPlaneIndexCount           = 0;
+    WGPUBuffer                   mTopLeftVertexBuffer           = nullptr;
+    WGPUBuffer                   mTopLeftIndexBuffer            = nullptr;
+    uint32_t                     mTopLeftIndexCount             = 0;
+    WGPUBuffer                   mTopCenterVertexBuffer         = nullptr;
+    WGPUBuffer                   mTopCenterIndexBuffer          = nullptr;
+    uint32_t                     mTopCenterIndexCount           = 0;
+    WGPUBuffer                   mTopRightVertexBuffer         = nullptr;
+    WGPUBuffer                   mTopRightIndexBuffer          = nullptr;
+    uint32_t                     mTopRightIndexCount           = 0;
+    WGPUBuffer                   mBottomLeftVertexBuffer         = nullptr;
+    WGPUBuffer                   mBottomLeftIndexBuffer          = nullptr;
+    uint32_t                     mBottomLeftIndexCount           = 0;
+    WGPUBuffer                   mBottomCenterVertexBuffer         = nullptr;
+    WGPUBuffer                   mBottomCenterIndexBuffer          = nullptr;
+    uint32_t                     mBottomCenterIndexCount           = 0;
+    WGPUBuffer                   mBottomRightVertexBuffer         = nullptr;
+    WGPUBuffer                   mBottomRightIndexBuffer          = nullptr;
+    uint32_t                     mBottomRightIndexCount           = 0;
     //Interactions
     bool buttonClicked = false;
 

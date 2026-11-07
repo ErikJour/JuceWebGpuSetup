@@ -1,5 +1,10 @@
-const MAT_ONOFFBUTTON: u32 = 0u;
-const MAT_PLANE      : u32 = 1u;
+const MAT_ONOFFBUTTON  : u32 = 0u;
+const TOPLEFTCUBE      : u32 = 1u;
+const TOPCENTERCUBE    : u32 = 2u;
+const TOPRIGHTCUBE     : u32 = 3u;
+const BOTTOMLEFTCUBE   : u32 = 4u;
+const BOTTOMCENTERCUBE : u32 = 5u;
+const BOTTOMRIGHTCUBE  : u32 = 6u;
 
 struct Uniforms {
     time:       f32,
