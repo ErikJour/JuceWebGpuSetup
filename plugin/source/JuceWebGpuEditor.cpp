@@ -54,3 +54,14 @@ void JuceWebGpuProcessorEditor::timerCallback()
 }
 
 void JuceWebGpuProcessorEditor::resized() {}
+
+void JuceWebGpuProcessorEditor::mouseDown(const juce::MouseEvent& event)
+{
+    const auto xPos = static_cast<uint32_t>(event.x);
+    const auto yPos = static_cast<uint32_t>(event.y);
+
+    mWebGpuWindow.getScene().setClick(xPos, yPos);
+
+
+}
+

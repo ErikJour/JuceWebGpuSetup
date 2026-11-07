@@ -4,8 +4,8 @@
 
 #include "SphereGeometry.h"
 
-SphereGeometry::SphereGeometry() {}
-SphereGeometry::~SphereGeometry() {}
+SphereGeometry::SphereGeometry() = default;
+SphereGeometry::~SphereGeometry() = default;
 
 void SphereGeometry::buildSphere(std::vector<SphereVertex>& vertices,
                             std::vector<SphereIndex>& indices,

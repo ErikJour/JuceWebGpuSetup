@@ -234,6 +234,8 @@ std::pair<WGPUSurfaceTexture, WGPUTextureView> Scene::getNextSurfaceViewData() c
 
 void Scene::setUniforms()
 {
+    mUniforms.pressed = buttonClicked;
+
     for (uint32_t m = 0; m < materialCount; m++) {
         mUniforms.materialId = m;
         wgpuQueueWriteBuffer(mQueue, mUniformBuffer,
@@ -254,6 +256,7 @@ void Scene::renderFrame() {
 #endif
     if (!mPipeline) return;
     if (!mSurface)  return;
+    setUniforms();
     //====================================================================================
     //Ask for the surface texture and the target view for the frame
     //====================================================================================
@@ -358,7 +361,7 @@ void Scene::initializeOnOffButton() {
     std::vector<SphereVertex> vertices;
     std::vector<SphereIndex>  indices;
 
-    SphereGeometry::buildSphere(vertices, indices);
+    SphereGeometry::buildSphere(vertices, indices, 0.1f);
     mOnOffButtonIndexCount = static_cast<uint32_t>(indices.size());
     WGPUBufferDescriptor bd{};
     bd.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
@@ -369,6 +372,21 @@ void Scene::initializeOnOffButton() {
     bd.size = indices.size() * sizeof(SphereIndex);
     mOnOffButtonIndexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
     wgpuQueueWriteBuffer(mQueue, mOnOffButtonIndexBuffer, 0, indices.data(), bd.size);
+}
+
+void Scene::setClick (uint32_t x,uint32_t y)
+{
+    std::cout << "X position: " << x << ", Y position: " << y << std::endl;
+    if (x > 37 && x < 77 && y > 376 && y < 411) {
+        if (!buttonClicked) {
+            buttonClicked = true;
+        } else {
+            buttonClicked = false;
+        }
+        std::cout << "Button clicked is: " << buttonClicked << std::endl;
+    }
+    //37 to 77
+    //376 to 411
 }
 
 

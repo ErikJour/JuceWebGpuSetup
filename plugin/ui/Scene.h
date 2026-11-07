@@ -40,6 +40,9 @@ public:
 
     void initializeScene() ;
     void renderFrame();
+    //==================
+    void setClick (uint32_t x,uint32_t y);
+
     //===================================================================================
     //Mesh Work
     //===================================================================================
@@ -77,13 +80,14 @@ private:
     WGPUTextureView              mTextureView               = nullptr;
     WGPUTexture                  mTexture                   = nullptr;
     MyUniforms                   mUniforms                  = {};
-
     //================
     //Geometry buffers
     //================
     WGPUBuffer                   mOnOffButtonVertexBuffer        = nullptr;
     WGPUBuffer                   mOnOffButtonIndexBuffer         = nullptr;
     uint32_t                     mOnOffButtonIndexCount          = 0;
+    //Interactions
+    bool buttonClicked = false;
 
 };
 

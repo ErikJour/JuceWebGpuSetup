@@ -17,6 +17,7 @@ public:
     void parentHierarchyChanged() override;
     void resized() override;
     void timerCallback() override;
+    void mouseDown(const juce::MouseEvent& event) override;
 
 
 private:

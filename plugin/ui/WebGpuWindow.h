@@ -29,8 +29,6 @@ public:
     [[nodiscard]] bool hasSurface()     const { return mSurface != nullptr; }
     [[nodiscard]] void* getNativeView() const { return mNativeView; }
 private:
-
-
     static void setDefault(WGPULimits &limits);
     static void setDefault(WGPUStencilFaceState &stencilFaceState);
     static void setDefault(WGPUDepthStencilState &depthStencilState);

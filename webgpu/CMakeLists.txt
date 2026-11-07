@@ -9,7 +9,10 @@ add_library(webgpu INTERFACE
 		../plugin/ui/Utilities.h
 		../plugin/ui/Scene.cpp
 		../plugin/ui/Scene.h
-		../plugin/ui/ResourceManager.h)
+		../plugin/ui/ResourceManager.h
+		../plugin/geometries/PlaneGeometry.cpp
+		../plugin/geometries/PlaneGeometry.h
+)
 
 if (EMSCRIPTEN)
 
