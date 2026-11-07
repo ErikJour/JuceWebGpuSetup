@@ -49,7 +49,8 @@ void JuceWebGpuProcessorEditor::parentHierarchyChanged()
 void JuceWebGpuProcessorEditor::timerCallback()
 {
     if (mStartTimeSet) {
-        mWebGpuWindow.getScene().renderFrame();
+        const double elapsed = (juce::Time::getMillisecondCounterHiRes() - mStartTimeMs) * 0.001;
+        mWebGpuWindow.getScene().renderFrame(elapsed);
     }
 }
 

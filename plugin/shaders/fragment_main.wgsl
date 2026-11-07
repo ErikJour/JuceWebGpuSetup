@@ -1,7 +1,7 @@
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
 
-    //We call different fragment functions depending on the material.
+    //Material-dependant fragment functions.
     switch u.materialId {
              case MAT_ONOFFBUTTON:  { return fragmentOnOff(in);         }
              case MAT_PLANE:        { return fragmentPlane(in);         }

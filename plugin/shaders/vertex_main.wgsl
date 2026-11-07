@@ -10,7 +10,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     var out      : VertexOutput;
     var position = in.position;
 
-    //We call different vertex functions depending on the material.
+    //Material-dependant vertex functions.
     switch u.materialId {
             case MAT_ONOFFBUTTON:  { out.clipPos = vertexOnOff        (&position); }
             case MAT_PLANE:        { out.clipPos = vertexPlane        (&position); }

@@ -245,7 +245,7 @@ void Scene::setUniforms()
     }
 }
 
-void Scene::renderFrame() {
+void Scene::renderFrame(float time) {
     //====================================================================================
     //Add reloadable shader setup here
     //====================================================================================
@@ -258,6 +258,7 @@ void Scene::renderFrame() {
 #endif
     if (!mPipeline) return;
     if (!mSurface)  return;
+    mUniforms.time = time;
     setUniforms();
     //====================================================================================
     //Ask for the surface texture and the target view for the frame
@@ -350,8 +351,8 @@ void Scene::setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint
 
 void Scene::initializeScene() {
 
-    initializeOnOffButton();
     initializePlane();
+    initializeOnOffButton();
 }
 
 void Scene::renderMeshes(const WGPURenderPassEncoder renderPass) const {

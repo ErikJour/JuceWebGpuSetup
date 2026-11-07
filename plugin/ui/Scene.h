@@ -40,7 +40,7 @@ public:
     void setUniforms();
 
     void initializeScene() ;
-    void renderFrame();
+    void renderFrame(float time);
     //==================
     void setClick (uint32_t x,uint32_t y);
 
