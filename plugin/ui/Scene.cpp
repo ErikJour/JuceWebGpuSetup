@@ -246,8 +246,10 @@ std::pair<WGPUSurfaceTexture, WGPUTextureView> Scene::getNextSurfaceViewData() c
 
 void Scene::setUniforms()
 {
+    //Used for the on / off button interactions
     mUniforms.pressed = buttonClicked;
 
+    //Assign our materials here
     for (uint32_t m = 0; m < materialCount; m++) {
         mUniforms.materialId = m;
         wgpuQueueWriteBuffer(mQueue, mUniformBuffer,

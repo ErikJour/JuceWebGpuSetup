@@ -11,7 +11,7 @@ static constexpr uint32_t TOPCENTERCUBE    = 2;
 static constexpr uint32_t TOPRIGHTCUBE     = 3;
 static constexpr uint32_t BOTTOMLEFTCUBE   = 4;
 static constexpr uint32_t BOTTOMCENTERCUBE = 5;
-static constexpr uint32_t BOTTOMRIGHTCUBE   = 6;
+static constexpr uint32_t BOTTOMRIGHTCUBE  = 6;
 
 struct MyUniforms {
     float    time;

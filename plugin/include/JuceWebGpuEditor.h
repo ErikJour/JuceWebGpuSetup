@@ -33,6 +33,7 @@ private:
     bool     mStartTimeSet        = false;
     uint32_t mConfiguredWidth     = 0;
     uint32_t mConfiguredHeight    = 0;
+    uint32_t currentFrame         = 0;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JuceWebGpuProcessorEditor)
