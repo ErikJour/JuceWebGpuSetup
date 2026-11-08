@@ -290,7 +290,7 @@ void Scene::renderFrame(float time) {
     colorAttachment.view          = targetView;
     colorAttachment.loadOp        = WGPULoadOp_Clear;
     colorAttachment.storeOp       = WGPUStoreOp_Store;
-    colorAttachment.clearValue    = { 0.5, 0.5, 0.5, 1.0 };
+    colorAttachment.clearValue    = { 0.35, 0.5, 0.6, 1.0 };
     colorAttachment.depthSlice    = WGPU_DEPTH_SLICE_UNDEFINED;
     //====================================================================================
     //Setup master render pass
@@ -559,15 +559,9 @@ void Scene::setClick (uint32_t x,uint32_t y)
         if (!buttonClicked) { buttonClicked = true; }
         else { buttonClicked = false; }
     }
-
 }
 
 void Scene::getSequencerInterval(uint32_t interval)
 {
-    std::cout << "This is our trigger at frame:" << interval << std::endl;
     mUniforms.tick = interval;
 }
-
-
-
-

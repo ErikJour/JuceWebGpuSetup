@@ -1,9 +1,21 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include "../utils/AudioUtils.h"
+#include "../dsp/Oscillator.h"
+
+namespace ParameterID {
+#define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
+
+    PARAMETER_ID(strikeNote)
+
+#undef PARAMETER_ID
+}
+
 
 //==============================================================================
-class JuceWebGpuProcessor final : public juce::AudioProcessor
+class JuceWebGpuProcessor final : public juce::AudioProcessor,
+                                    public juce::ValueTree::Listener
 {
 public:
     //==============================================================================
@@ -42,7 +54,24 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    //==============================================================================
+    juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout() };
+    bool mStrikeNote {false};
+    uint32_t mSequencerClick = 0;
+
 private:
+    Oscillator mOscillator{};
+    juce::AudioParameterBool*  strikeNoteParam{};
+
+    uint32_t mTickAdvance = 0;
+    uint32_t mSampleTick = 0;
+
+
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    void valueTreePropertyChanged(juce::ValueTree&, const juce::Identifier&) override { parametersChanged.store(true); }
+    void update();
+    std::atomic<bool> parametersChanged{false};
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JuceWebGpuProcessor)
 };

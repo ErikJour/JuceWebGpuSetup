@@ -66,7 +66,6 @@ public:
 
     bool buttonClicked = false;
 
-
 private:
     WGPUFragmentState            mFragmentState             = {};
     WGPUColorTargetState         mColorTarget               = {};
@@ -96,25 +95,24 @@ private:
     WGPUBuffer                   mOnOffButtonVertexBuffer        = nullptr;
     WGPUBuffer                   mOnOffButtonIndexBuffer         = nullptr;
     uint32_t                     mOnOffButtonIndexCount          = 0;
-    WGPUBuffer                   mTopLeftVertexBuffer           = nullptr;
-    WGPUBuffer                   mTopLeftIndexBuffer            = nullptr;
-    uint32_t                     mTopLeftIndexCount             = 0;
-    WGPUBuffer                   mTopCenterVertexBuffer         = nullptr;
-    WGPUBuffer                   mTopCenterIndexBuffer          = nullptr;
-    uint32_t                     mTopCenterIndexCount           = 0;
-    WGPUBuffer                   mTopRightVertexBuffer         = nullptr;
-    WGPUBuffer                   mTopRightIndexBuffer          = nullptr;
-    uint32_t                     mTopRightIndexCount           = 0;
+    WGPUBuffer                   mTopLeftVertexBuffer            = nullptr;
+    WGPUBuffer                   mTopLeftIndexBuffer             = nullptr;
+    uint32_t                     mTopLeftIndexCount              = 0;
+    WGPUBuffer                   mTopCenterVertexBuffer          = nullptr;
+    WGPUBuffer                   mTopCenterIndexBuffer           = nullptr;
+    uint32_t                     mTopCenterIndexCount            = 0;
+    WGPUBuffer                   mTopRightVertexBuffer           = nullptr;
+    WGPUBuffer                   mTopRightIndexBuffer            = nullptr;
+    uint32_t                     mTopRightIndexCount             = 0;
     WGPUBuffer                   mBottomLeftVertexBuffer         = nullptr;
     WGPUBuffer                   mBottomLeftIndexBuffer          = nullptr;
     uint32_t                     mBottomLeftIndexCount           = 0;
-    WGPUBuffer                   mBottomCenterVertexBuffer         = nullptr;
-    WGPUBuffer                   mBottomCenterIndexBuffer          = nullptr;
-    uint32_t                     mBottomCenterIndexCount           = 0;
-    WGPUBuffer                   mBottomRightVertexBuffer         = nullptr;
-    WGPUBuffer                   mBottomRightIndexBuffer          = nullptr;
-    uint32_t                     mBottomRightIndexCount           = 0;
-    //Interactions
+    WGPUBuffer                   mBottomCenterVertexBuffer       = nullptr;
+    WGPUBuffer                   mBottomCenterIndexBuffer        = nullptr;
+    uint32_t                     mBottomCenterIndexCount         = 0;
+    WGPUBuffer                   mBottomRightVertexBuffer        = nullptr;
+    WGPUBuffer                   mBottomRightIndexBuffer         = nullptr;
+    uint32_t                     mBottomRightIndexCount          = 0;
 
 };
 

@@ -18,6 +18,11 @@ public:
     void resized() override;
     void timerCallback() override;
     void mouseDown(const juce::MouseEvent& event) override;
+    void mouseUp  (const juce::MouseEvent& event) override;
+    void startSequencer();
+    void resetSequencer();
+
+
 
 private:
 
@@ -33,7 +38,7 @@ private:
     uint32_t mConfiguredWidth     = 0;
     uint32_t mConfiguredHeight    = 0;
     uint32_t currentFrame         = 0;
-    uint32_t tick                 = 0;
+    uint32_t mTick                = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JuceWebGpuProcessorEditor)
 };

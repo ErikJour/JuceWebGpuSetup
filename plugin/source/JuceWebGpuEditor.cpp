@@ -8,6 +8,8 @@ JuceWebGpuProcessorEditor::JuceWebGpuProcessorEditor (JuceWebGpuProcessor& p)
     juce::ignoreUnused (processorRef);
     setSize (WIDTH, HEIGHT);
     mWebGpuWindow.initialize();
+    currentFrame = 0;
+    resetSequencer();
 }
 
 JuceWebGpuProcessorEditor::~JuceWebGpuProcessorEditor()
@@ -18,26 +20,36 @@ JuceWebGpuProcessorEditor::~JuceWebGpuProcessorEditor()
 
 void JuceWebGpuProcessorEditor::parentHierarchyChanged()
 {
+    //Call the base class function
     AudioProcessorEditor::parentHierarchyChanged();
 
+    //We already have a surface, or we don't have a native window yet
     if (mWebGpuWindow.hasSurface() || getPeer() == nullptr)
         return;
 
+    //Get the display set by the OS
     const auto* webGpuDisplay = juce::Desktop::getInstance().getDisplays().getPrimaryDisplay();
-    const double scale        = webGpuDisplay ? webGpuDisplay->scale : 1.0;
-    const auto width          = static_cast<uint32_t>(getWidth() * scale);
-    const auto height         = static_cast<uint32_t>(getHeight() * scale);
+    const double scale                       = webGpuDisplay ? webGpuDisplay->scale : 1.0;
+    const auto width                         = static_cast<uint32_t>(getWidth() * scale);
+    const auto height                        = static_cast<uint32_t>(getHeight() * scale);
 
+    //Return if surface setup fails
     if (!mWebGpuWindow.initSurface(scale, width, height))
         return;
+
+    //Mouse clicks pass into the JUCE editor
     mNativeView.setInterceptsMouseClicks(false, false);
     addAndMakeVisible(&mNativeView);
+
+    //Platform specific window setup
 #if JUCE_MAC
     mNativeView.setView(mWebGpuWindow.getNativeView());
 #elif JUCE_WINDOWS
     mNativeView.setHWND(mWebGpuWindow.getNativeView());
 #endif
     mNativeView.setBounds(getLocalBounds());
+
+    //Start timer
     mStartTimeMs      = juce::Time::getMillisecondCounterHiRes();
     mStartTimeSet     = true;
     mConfiguredWidth  = width;
@@ -52,19 +64,30 @@ void JuceWebGpuProcessorEditor::timerCallback()
         const double elapsed = (juce::Time::getMillisecondCounterHiRes() - mStartTimeMs) * 0.001;
         mWebGpuWindow.getScene().renderFrame(elapsed);
     }
-    //I want to pass a flag every 45 frames to my graphics engine to update the sequencer
-    //This can also be a juce audio parameter int that triggers specific notes
-    if (mWebGpuWindow.getScene().buttonClicked && currentFrame % 45 == 0) {
 
-        mWebGpuWindow.getScene().getSequencerInterval(tick);
+    if (mWebGpuWindow.getScene().buttonClicked) {
 
-        if (tick < 5) { ++tick; }
-        else { tick = 0; }
+        if (currentFrame == 0) {
+            startSequencer(); } {
+
+            if (currentFrame < 59) {
+                processorRef.mStrikeNote = true;
+                currentFrame++;
+
+            } else {
+
+                processorRef.mStrikeNote = false;
+                std::cout << "Note clicked off" << std::endl;
+                currentFrame = 0;
+
+                }
+            }
+
+        } else {
+            currentFrame = 0;
+            processorRef.mStrikeNote = false;
     }
-    currentFrame++;
 }
-
-void JuceWebGpuProcessorEditor::resized() {}
 
 void JuceWebGpuProcessorEditor::mouseDown(const juce::MouseEvent& event)
 {
@@ -72,6 +95,27 @@ void JuceWebGpuProcessorEditor::mouseDown(const juce::MouseEvent& event)
     const auto yPos = static_cast<uint32_t>(event.y);
 
     mWebGpuWindow.getScene().setClick(xPos, yPos);
-
 }
+
+void JuceWebGpuProcessorEditor::mouseUp(const juce::MouseEvent& event)
+{
+    juce::ignoreUnused(event);
+}
+
+void JuceWebGpuProcessorEditor::resized() {}
+
+void JuceWebGpuProcessorEditor::startSequencer()
+{
+    mTick = processorRef.mSequencerClick;
+    mWebGpuWindow.getScene().getSequencerInterval(mTick);
+    processorRef.mStrikeNote = true;
+    std::cout << mTick << std::endl;
+}
+
+void JuceWebGpuProcessorEditor::resetSequencer()
+{
+    mTick = 0;
+    mWebGpuWindow.getScene().getSequencerInterval(mTick);
+}
+
 

@@ -6,6 +6,10 @@ const BOTTOMLEFTCUBE   : u32 = 4u;
 const BOTTOMCENTERCUBE : u32 = 5u;
 const BOTTOMRIGHTCUBE  : u32 = 6u;
 
+const animatedGreen = vec4(0.35, 0.67, 0.2, 1.0);
+const animatedBlack = vec4(0.0, 0.0, 0.0, 1.0);
+const animatedRed   = vec4(0.5, 0.07, 0.04, 1.0);
+
 struct Uniforms {
     time:       f32,
     materialId: u32,

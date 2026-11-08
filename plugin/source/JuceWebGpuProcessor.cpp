@@ -1,6 +1,8 @@
 #include "../include/JuceWebGpuProcessor.h"
 #include "../include/JuceWebGpuEditor.h"
 
+
+
 //==============================================================================
 JuceWebGpuProcessor::JuceWebGpuProcessor()
      : AudioProcessor (BusesProperties()
@@ -12,10 +14,15 @@ JuceWebGpuProcessor::JuceWebGpuProcessor()
                      #endif
                        )
 {
+    apvts.state.addListener(this);
+    mSequencerClick = 0;
+    castParameter(apvts, ParameterID::strikeNote, strikeNoteParam);
 }
 
 JuceWebGpuProcessor::~JuceWebGpuProcessor()
 {
+    apvts.state.removeListener(this);
+    mOscillator.reset();
 }
 
 //==============================================================================
@@ -86,8 +93,12 @@ void JuceWebGpuProcessor::changeProgramName (int index, const juce::String& newN
 //==============================================================================
 void JuceWebGpuProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-
-    juce::ignoreUnused (sampleRate, samplesPerBlock);
+    uint32_t bpm = 80;
+    mOscillator.setSampleRate(sampleRate);
+    mTickAdvance = static_cast<uint32_t>(sampleRate * 60 / bpm); //33075 samples
+    mOscillator.setFrequency(300.0f);
+    parametersChanged.store(true);
+    juce::ignoreUnused ( samplesPerBlock);
 }
 
 void JuceWebGpuProcessor::releaseResources()
@@ -121,10 +132,9 @@ bool JuceWebGpuProcessor::isBusesLayoutSupported (const BusesLayout& layouts) co
 }
 
 void JuceWebGpuProcessor::processBlock (juce::AudioBuffer<float>& buffer,
-                                              juce::MidiBuffer& midiMessages)
+                                               juce::MidiBuffer& midiMessages)
 {
-    juce::ignoreUnused (midiMessages);
-
+    bool noteOn = mStrikeNote;
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -132,11 +142,28 @@ void JuceWebGpuProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-        juce::ignoreUnused (channelData);
+    bool expected = true;
+    if (parametersChanged.compare_exchange_strong(expected, false))
+        update();
+
+    for (int i = 0; i < buffer.getNumSamples(); i++) {
+
+        if (mSampleTick % mTickAdvance == 0) {
+            if (noteOn) {
+                if (mSequencerClick < 5) {
+                    mSequencerClick++;
+                } else {
+                    mSequencerClick = 0;
+                }
+            }
+
+        }
+        mSampleTick++;
     }
+
+
+    if (noteOn) { mOscillator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples()); }
+    else        { mOscillator.reset(); }
 }
 
 //==============================================================================
@@ -159,6 +186,23 @@ void JuceWebGpuProcessor::getStateInformation (juce::MemoryBlock& destData)
 void JuceWebGpuProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     juce::ignoreUnused (data, sizeInBytes);
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout JuceWebGpuProcessor::createParameterLayout() {
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+            ParameterID::strikeNote,
+            "On",
+            false));
+
+    return layout;
+}
+
+void JuceWebGpuProcessor::update() {
+
+    bool onOff         = strikeNoteParam->get();
+    mStrikeNote        = onOff;
 }
 
 //==============================================================================

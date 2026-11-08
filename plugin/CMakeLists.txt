@@ -52,6 +52,7 @@ target_sources(JuceWebGpuSetup
         ui/Scene.cpp
         geometries/SphereGeometry.cpp
         geometries/PlaneGeometry.cpp
+        dsp/Oscillator.cpp
 )
 
 target_include_directories(JuceWebGpuSetup
@@ -61,6 +62,8 @@ target_include_directories(JuceWebGpuSetup
         ui
         shaders
         geometries
+        utils
+        dsp
 )
 
 target_link_libraries(JuceWebGpuSetup
