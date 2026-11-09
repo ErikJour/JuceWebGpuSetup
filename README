@@ -1,11 +1,13 @@
-WebGPU (Dawn) + JUCE
+# WebGPU (Dawn) + JUCE
 
 This project demonstrates setting up WebGPU inside of a JUCE audio plugin. Follow the steps
 below to get this running:
 
-![Image of basic render on Main branch](images/Basic_render.png)
+<p align="center">
+  <img src="images/Basic_render.png" alt="Basic render on the main branch" width="600">
+</p>
 
-Getting Started:
+## Getting Started:
 
 1) Install [CMake](https://cmake.org) if you don't already have it
 
