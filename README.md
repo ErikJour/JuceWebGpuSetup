@@ -4,14 +4,14 @@ This project demonstrates setting up WebGPU inside of a JUCE audio plugin. Follo
 below to get this running:
 
 <p align="center">
-  <img src="images/Basic_render.png" alt="Basic render on the main branch" width="600">
+  <img src="images/Basic_render.png" alt="Basic render on the main branch" width="300">
 </p>
 
 ## Getting Started:
 
-1) Install [CMake](https://cmake.org) if you don't already have it
+1) Install [CMake](https://cmake.org) if you don't already have it.
 
-2) Clone the latest version of JUCE inside the root directory
+2) Clone the latest version of [JUCE](https://github.com/juce-framework/JUCE) inside the root directory.
 
 3) Configure CMake project with cmake -B build -DCMAKE_BUILD_TYPE=Debug
 
