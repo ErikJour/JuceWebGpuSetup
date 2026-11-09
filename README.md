@@ -17,15 +17,21 @@ below to get this running:
 
 4) Run cmake --build build
 
-5) Explore the various branches for different examples of rendering graphics using WebGPU inside a JUCE plugin. Current:
+## Examples
 
-    A) Main -> basic cross-platform renderer
+# Each branch shows a different way of rendering graphics with WebGPU inside a JUCE plugin:
 
-    B) Example_02_2D_Button_and_Viz -> example project with on / off button and simple visualization via uniform to shader.
+| Branch | Description |
+|---|---|
+| `main` | Basic cross-platform renderer |
+| `Example_02_2D_Button_and_Viz` | On/off button and a simple visualization driven by a shader uniform |
+| `Example_03_2D_Sequencer_with_Oscillator` | *Coming soon* |
+| `Example_04_3D_Slider_with_Oscillator` | *Coming soon* |
 
-    C) Coming soon -> Example_03_2D_Sequencer_with_Oscillator
-
-    D) Coming soon -> Example 04_3D_Slider_with_Oscillator
+To try an example:
+```bash
+git switch Example_02_2D_Button_and_Viz
+cmake --build build
 
 Thank you! Check out my 3D synthesizer plugin, Animated East at animatedinstruments.com
 
