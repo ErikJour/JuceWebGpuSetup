@@ -21,12 +21,12 @@ below to get this running:
 
 # Each branch shows a different way of rendering graphics with WebGPU inside a JUCE plugin:
 
-| Branch | Description |
-|---|---|
-| `main` | Basic cross-platform renderer |
+| Branch | Description                                                         |
+|---|---------------------------------------------------------------------|
+| `main` | Basic cross-platform renderer                                       |
 | `Example_02_2D_Button_and_Viz` | On/off button and a simple visualization driven by a shader uniform |
-| `Example_03_2D_Sequencer_with_Oscillator` | *Coming soon* |
-| `Example_04_3D_Slider_with_Oscillator` | *Coming soon* |
+| `Example_03_2D_Sequencer_with_Oscillator` | *In-progress, button with simple 6-note sequencer*                  |
+| `Example_04_3D_Slider_with_Oscillator` | *Coming soon*                                                       |
 
 To try an example:
 ```bash
