@@ -77,7 +77,6 @@ void JuceWebGpuProcessorEditor::timerCallback()
             } else {
 
                 processorRef.mStrikeNote = false;
-                std::cout << "Note clicked off" << std::endl;
                 currentFrame = 0;
 
                 }
@@ -109,7 +108,6 @@ void JuceWebGpuProcessorEditor::startSequencer()
     mTick = processorRef.mSequencerClick;
     mWebGpuWindow.getScene().getSequencerInterval(mTick);
     processorRef.mStrikeNote = true;
-    std::cout << mTick << std::endl;
 }
 
 void JuceWebGpuProcessorEditor::resetSequencer()
