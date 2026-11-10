@@ -67,7 +67,7 @@ void JuceWebGpuProcessorEditor::timerCallback()
         const double elapsed = (juce::Time::getMillisecondCounterHiRes() - mStartTimeMs) * 0.001;
         mWebGpuWindow.getScene().renderFrame(elapsed);
     }
-
+//Erik -> rewrite all of this on the processor
     if (mWebGpuWindow.getScene().buttonClicked) {
 
         if (currentFrame == 0) {
@@ -78,13 +78,10 @@ void JuceWebGpuProcessorEditor::timerCallback()
                 currentFrame++;
 
             } else {
-
                 processorRef.mStrikeNote = false;
                 currentFrame = 0;
-
                 }
             }
-
         } else {
             currentFrame = 0;
             processorRef.mStrikeNote = false;
@@ -93,10 +90,14 @@ void JuceWebGpuProcessorEditor::timerCallback()
 
 void JuceWebGpuProcessorEditor::mouseDown(const juce::MouseEvent& event)
 {
+    //Get our current x and y mouse positions
     const auto xPos = static_cast<uint32_t>(event.x);
     const auto yPos = static_cast<uint32_t>(event.y);
 
+    //Set the click for the webgpu scene
     mWebGpuWindow.getScene().setClick(xPos, yPos);
+
+    //Set the click for the audio processor
     buttonOn = ! buttonOn;
     buttonAttachment->setValueAsCompleteGesture(buttonOn);
 }
@@ -126,17 +127,15 @@ void JuceWebGpuProcessorEditor::initializeButton()
     //============================================================
     //Button setup
     //============================================================
+    //Get a pointer to the button parameter
     auto* button = processorRef.apvts.getParameter(ParameterID::sequencerOn.getParamID());
-    juce::String name = button->name;
-    std::cout << "Button name: " << name << std::endl;
     jassert(button != nullptr);
+
+    //Set our parameter attachment and callback function
     buttonAttachment = std::make_unique<juce::ParameterAttachment>(
             *button,
             [this](const bool newValue) { buttonOn = newValue; });
-
+    //Send initial update
     buttonAttachment->sendInitialUpdate();
-
-//    bool seqOnOff      = buttonAttachment.get();
-    std::cout << "Sequencer on / off in button: " << buttonOn << std::endl;
 }
 

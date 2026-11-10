@@ -102,11 +102,7 @@ void JuceWebGpuProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     juce::ignoreUnused ( samplesPerBlock);
 }
 
-void JuceWebGpuProcessor::releaseResources()
-{
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
-}
+void JuceWebGpuProcessor::releaseResources(){}
 
 bool JuceWebGpuProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
@@ -114,15 +110,10 @@ bool JuceWebGpuProcessor::isBusesLayoutSupported (const BusesLayout& layouts) co
     juce::ignoreUnused (layouts);
     return true;
   #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
      && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-    // This checks if the input layout matches the output layout
    #if ! JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
@@ -212,19 +203,7 @@ void JuceWebGpuProcessor::update() {
 
     bool seqOnOff      = sequencerOnParam->get();
     mSeqOn             = seqOnOff;
-
-    std::cout << "Sequencer on / off in update: " << mSeqOn << std::endl;
-
 }
-
-void JuceWebGpuProcessor::setSequencer(bool on)
-{
-    bool seqOnOff      = sequencerOnParam->get();
-    seqOnOff = on;
-    mSeqOn             = seqOnOff;
-    std::cout << mSeqOn << std::endl;
-}
-
 
 //==============================================================================
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

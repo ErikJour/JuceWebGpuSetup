@@ -13,7 +13,6 @@ namespace ParameterID {
 #undef PARAMETER_ID
 }
 
-
 //==============================================================================
 class JuceWebGpuProcessor final : public juce::AudioProcessor,
                                     public juce::ValueTree::Listener
@@ -54,7 +53,6 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-    void setSequencer(bool on);
 
 
     //==============================================================================
@@ -70,7 +68,6 @@ private:
 
     uint32_t mTickAdvance = 0;
     uint32_t mSampleTick = 0;
-
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     void valueTreePropertyChanged(juce::ValueTree&, const juce::Identifier&) override { parametersChanged.store(true); }
