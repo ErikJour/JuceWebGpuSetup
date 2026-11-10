@@ -53,6 +53,8 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    void triggerNote(juce::AudioBuffer<float>& buffer);
+
 
 
     //==============================================================================
@@ -60,11 +62,16 @@ public:
     bool mStrikeNote {false};
     bool mSeqOn {false};
     uint32_t mSequencerClick = 0;
+    uint32_t mNoteLengthInSamples = 25000;
+
+    uint32_t mCount = 0;
+
 
 private:
     Oscillator mOscillator{};
     juce::AudioParameterBool*  strikeNoteParam{};
     juce::AudioParameterBool*  sequencerOnParam{};
+    double mSampleRate = 44100;
 
     uint32_t mTickAdvance = 0;
     uint32_t mSampleTick = 0;

@@ -16,6 +16,8 @@ JuceWebGpuProcessor::JuceWebGpuProcessor()
 {
     apvts.state.addListener(this);
     mSequencerClick = 0;
+    mCount = 0;
+
     castParameter(apvts, ParameterID::strikeNote, strikeNoteParam);
     castParameter(apvts, ParameterID::sequencerOn, sequencerOnParam);
 }
@@ -97,9 +99,11 @@ void JuceWebGpuProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     uint32_t bpm = 80;
     mOscillator.setSampleRate(sampleRate);
     mTickAdvance = static_cast<uint32_t>(sampleRate * 60 / bpm); //33075 samples
+    mNoteLengthInSamples = 25000;
     mOscillator.setFrequency(300.0f);
     parametersChanged.store(true);
     juce::ignoreUnused ( samplesPerBlock);
+    mSampleRate = sampleRate;
 }
 
 void JuceWebGpuProcessor::releaseResources(){}
@@ -126,7 +130,6 @@ bool JuceWebGpuProcessor::isBusesLayoutSupported (const BusesLayout& layouts) co
 void JuceWebGpuProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                                juce::MidiBuffer& midiMessages)
 {
-    bool noteOn = mStrikeNote;
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -138,24 +141,40 @@ void JuceWebGpuProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     if (parametersChanged.compare_exchange_strong(expected, false))
         update();
 
+    triggerNote(buffer);
+
+    //Looping through incoming samples
     for (int i = 0; i < buffer.getNumSamples(); i++) {
 
-        if (mSampleTick % mTickAdvance == 0) {
-            if (noteOn) {
-                if (mSequencerClick < 5) {
-                    mSequencerClick++;
-                } else {
-                    mSequencerClick = 0;
-                }
+        //Our sequencer is turned on
+        if (mSeqOn) {
+            //sampleTick equals 33075
+            if (mSampleTick == mTickAdvance) {
+                mSequencerClick++;
+
+                mOscillator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+                //Increase the click to the backend
+                if (mSequencerClick > 5) { mSequencerClick = 0; }
+                mSampleTick = 0;
             }
-
+            if (mSampleTick == 0) {
+                mSampleTick = 0;
+                mOscillator.reset();
+            }
+            mSampleTick++;
+        } else {
+            mSampleTick = 0;
         }
-        mSampleTick++;
     }
+}
 
-
-    if (noteOn) { mOscillator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples()); }
-    else        { mOscillator.reset(); }
+void JuceWebGpuProcessor::triggerNote(juce::AudioBuffer<float>& buffer)
+{
+    if (mSeqOn) {
+        mOscillator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+    } else {
+        mOscillator.reset();
+    }
 }
 
 //==============================================================================
@@ -204,6 +223,7 @@ void JuceWebGpuProcessor::update() {
     bool seqOnOff      = sequencerOnParam->get();
     mSeqOn             = seqOnOff;
 }
+
 
 //==============================================================================
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

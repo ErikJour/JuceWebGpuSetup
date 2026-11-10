@@ -22,10 +22,8 @@ public:
     void startSequencer();
     void resetSequencer();
     void initializeButton();
+    void initializeStrikeNote();
 
-
-    bool mOn = false;
-//    AnimatedButton button;
 
 private:
 
@@ -40,12 +38,14 @@ private:
     bool     mStartTimeSet        = false;
     uint32_t mConfiguredWidth     = 0;
     uint32_t mConfiguredHeight    = 0;
-    uint32_t currentFrame         = 0;
     uint32_t mTick                = 0;
 
     //Button
     std::unique_ptr<juce::ParameterAttachment> buttonAttachment;  // param→UI binding
-    bool buttonOn = false;
+    bool mButtonOn = false;
+    //Strike Note
+    std::unique_ptr<juce::ParameterAttachment> strikeNoteAttachment;  // param→UI binding
+    bool mStrikeNote = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JuceWebGpuProcessorEditor)
 };

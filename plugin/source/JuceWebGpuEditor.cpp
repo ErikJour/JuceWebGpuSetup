@@ -8,9 +8,9 @@ JuceWebGpuProcessorEditor::JuceWebGpuProcessorEditor (JuceWebGpuProcessor& p)
     juce::ignoreUnused (processorRef);
     setSize (WIDTH, HEIGHT);
     mWebGpuWindow.initialize();
-    currentFrame = 0;
     resetSequencer();
     initializeButton();
+    initializeStrikeNote();
 }
 
 JuceWebGpuProcessorEditor::~JuceWebGpuProcessorEditor()
@@ -67,25 +67,7 @@ void JuceWebGpuProcessorEditor::timerCallback()
         const double elapsed = (juce::Time::getMillisecondCounterHiRes() - mStartTimeMs) * 0.001;
         mWebGpuWindow.getScene().renderFrame(elapsed);
     }
-//Erik -> rewrite all of this on the processor
-    if (mWebGpuWindow.getScene().buttonClicked) {
-
-        if (currentFrame == 0) {
-            startSequencer(); } {
-
-            if (currentFrame < 59) {
-                processorRef.mStrikeNote = true;
-                currentFrame++;
-
-            } else {
-                processorRef.mStrikeNote = false;
-                currentFrame = 0;
-                }
-            }
-        } else {
-            currentFrame = 0;
-            processorRef.mStrikeNote = false;
-    }
+        startSequencer();
 }
 
 void JuceWebGpuProcessorEditor::mouseDown(const juce::MouseEvent& event)
@@ -98,8 +80,8 @@ void JuceWebGpuProcessorEditor::mouseDown(const juce::MouseEvent& event)
     mWebGpuWindow.getScene().setClick(xPos, yPos);
 
     //Set the click for the audio processor
-    buttonOn = ! buttonOn;
-    buttonAttachment->setValueAsCompleteGesture(buttonOn);
+    mButtonOn = ! mButtonOn;
+    buttonAttachment->setValueAsCompleteGesture(mButtonOn);
 }
 
 void JuceWebGpuProcessorEditor::mouseUp(const juce::MouseEvent& event)
@@ -111,9 +93,9 @@ void JuceWebGpuProcessorEditor::resized() {}
 
 void JuceWebGpuProcessorEditor::startSequencer()
 {
+    //Pass this to our webgpu window
     mTick = processorRef.mSequencerClick;
     mWebGpuWindow.getScene().getSequencerInterval(mTick);
-    processorRef.mStrikeNote = true;
 }
 
 void JuceWebGpuProcessorEditor::resetSequencer()
@@ -134,8 +116,25 @@ void JuceWebGpuProcessorEditor::initializeButton()
     //Set our parameter attachment and callback function
     buttonAttachment = std::make_unique<juce::ParameterAttachment>(
             *button,
-            [this](const bool newValue) { buttonOn = newValue; });
+            [this](const bool newValue) { mButtonOn = newValue; });
     //Send initial update
     buttonAttachment->sendInitialUpdate();
+}
+
+void JuceWebGpuProcessorEditor::initializeStrikeNote()
+{
+    //============================================================
+    //Note setup
+    //============================================================
+    //Get a pointer to the button parameter
+    auto* strikeNote = processorRef.apvts.getParameter(ParameterID::strikeNote.getParamID());
+    jassert(strikeNote != nullptr);
+
+    //Set our parameter attachment and callback function
+    strikeNoteAttachment = std::make_unique<juce::ParameterAttachment>(
+            *strikeNote,
+            [this](const bool newValue) { mStrikeNote = newValue; });
+    //Send initial update
+    strikeNoteAttachment->sendInitialUpdate();
 }
 
