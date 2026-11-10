@@ -8,6 +8,7 @@ namespace ParameterID {
 #define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
 
     PARAMETER_ID(strikeNote)
+    PARAMETER_ID(sequencerOn)
 
 #undef PARAMETER_ID
 }
@@ -53,15 +54,19 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    void setSequencer(bool on);
+
 
     //==============================================================================
     juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout() };
     bool mStrikeNote {false};
+    bool mSeqOn {false};
     uint32_t mSequencerClick = 0;
 
 private:
     Oscillator mOscillator{};
     juce::AudioParameterBool*  strikeNoteParam{};
+    juce::AudioParameterBool*  sequencerOnParam{};
 
     uint32_t mTickAdvance = 0;
     uint32_t mSampleTick = 0;

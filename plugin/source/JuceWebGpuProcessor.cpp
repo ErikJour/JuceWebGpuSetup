@@ -17,6 +17,7 @@ JuceWebGpuProcessor::JuceWebGpuProcessor()
     apvts.state.addListener(this);
     mSequencerClick = 0;
     castParameter(apvts, ParameterID::strikeNote, strikeNoteParam);
+    castParameter(apvts, ParameterID::sequencerOn, sequencerOnParam);
 }
 
 JuceWebGpuProcessor::~JuceWebGpuProcessor()
@@ -196,6 +197,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout JuceWebGpuProcessor::createP
             "On",
             false));
 
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+            ParameterID::sequencerOn,
+            "Sequencer on",
+            false));
+
     return layout;
 }
 
@@ -203,7 +209,22 @@ void JuceWebGpuProcessor::update() {
 
     bool onOff         = strikeNoteParam->get();
     mStrikeNote        = onOff;
+
+    bool seqOnOff      = sequencerOnParam->get();
+    mSeqOn             = seqOnOff;
+
+    std::cout << "Sequencer on / off in update: " << mSeqOn << std::endl;
+
 }
+
+void JuceWebGpuProcessor::setSequencer(bool on)
+{
+    bool seqOnOff      = sequencerOnParam->get();
+    seqOnOff = on;
+    mSeqOn             = seqOnOff;
+    std::cout << mSeqOn << std::endl;
+}
+
 
 //==============================================================================
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

@@ -10,6 +10,7 @@ JuceWebGpuProcessorEditor::JuceWebGpuProcessorEditor (JuceWebGpuProcessor& p)
     mWebGpuWindow.initialize();
     currentFrame = 0;
     resetSequencer();
+    initializeButton();
 }
 
 JuceWebGpuProcessorEditor::~JuceWebGpuProcessorEditor()
@@ -36,6 +37,8 @@ void JuceWebGpuProcessorEditor::parentHierarchyChanged()
     //Return if surface setup fails
     if (!mWebGpuWindow.initSurface(scale, width, height))
         return;
+
+//    button.initializeButton();
 
     //Mouse clicks pass into the JUCE editor
     mNativeView.setInterceptsMouseClicks(false, false);
@@ -94,6 +97,8 @@ void JuceWebGpuProcessorEditor::mouseDown(const juce::MouseEvent& event)
     const auto yPos = static_cast<uint32_t>(event.y);
 
     mWebGpuWindow.getScene().setClick(xPos, yPos);
+    buttonOn = ! buttonOn;
+    buttonAttachment->setValueAsCompleteGesture(buttonOn);
 }
 
 void JuceWebGpuProcessorEditor::mouseUp(const juce::MouseEvent& event)
@@ -116,4 +121,22 @@ void JuceWebGpuProcessorEditor::resetSequencer()
     mWebGpuWindow.getScene().getSequencerInterval(mTick);
 }
 
+void JuceWebGpuProcessorEditor::initializeButton()
+{
+    //============================================================
+    //Button setup
+    //============================================================
+    auto* button = processorRef.apvts.getParameter(ParameterID::sequencerOn.getParamID());
+    juce::String name = button->name;
+    std::cout << "Button name: " << name << std::endl;
+    jassert(button != nullptr);
+    buttonAttachment = std::make_unique<juce::ParameterAttachment>(
+            *button,
+            [this](const bool newValue) { buttonOn = newValue; });
+
+    buttonAttachment->sendInitialUpdate();
+
+//    bool seqOnOff      = buttonAttachment.get();
+    std::cout << "Sequencer on / off in button: " << buttonOn << std::endl;
+}
 

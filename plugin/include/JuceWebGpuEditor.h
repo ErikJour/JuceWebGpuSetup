@@ -21,8 +21,11 @@ public:
     void mouseUp  (const juce::MouseEvent& event) override;
     void startSequencer();
     void resetSequencer();
+    void initializeButton();
 
 
+    bool mOn = false;
+//    AnimatedButton button;
 
 private:
 
@@ -39,6 +42,10 @@ private:
     uint32_t mConfiguredHeight    = 0;
     uint32_t currentFrame         = 0;
     uint32_t mTick                = 0;
+
+    //Button
+    std::unique_ptr<juce::ParameterAttachment> buttonAttachment;  // param→UI binding
+    bool buttonOn = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JuceWebGpuProcessorEditor)
 };
