@@ -68,8 +68,7 @@ double JuceWebGpuProcessor::getTailLengthSeconds() const
 
 int JuceWebGpuProcessor::getNumPrograms()
 {
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
+    return 1;
 }
 
 int JuceWebGpuProcessor::getCurrentProgram()
@@ -141,7 +140,13 @@ void JuceWebGpuProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     if (parametersChanged.compare_exchange_strong(expected, false))
         update();
 
-    triggerNote(buffer);
+
+    if (mSeqOn) { processSequencer(buffer); }
+}
+
+void JuceWebGpuProcessor::processSequencer(juce::AudioBuffer<float>& buffer)
+{
+    //First note or 0 index is messed up
 
     //Looping through incoming samples
     for (int i = 0; i < buffer.getNumSamples(); i++) {
@@ -151,29 +156,23 @@ void JuceWebGpuProcessor::processBlock (juce::AudioBuffer<float>& buffer,
             //sampleTick equals 33075
             if (mSampleTick == mTickAdvance) {
                 mSequencerClick++;
-
+                //Voice note on
                 mOscillator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
+
                 //Increase the click to the backend
                 if (mSequencerClick > 5) { mSequencerClick = 0; }
                 mSampleTick = 0;
             }
             if (mSampleTick == 0) {
                 mSampleTick = 0;
+                //voice note off
                 mOscillator.reset();
             }
             mSampleTick++;
         } else {
             mSampleTick = 0;
+            mOscillator.reset();
         }
-    }
-}
-
-void JuceWebGpuProcessor::triggerNote(juce::AudioBuffer<float>& buffer)
-{
-    if (mSeqOn) {
-        mOscillator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
-    } else {
-        mOscillator.reset();
     }
 }
 

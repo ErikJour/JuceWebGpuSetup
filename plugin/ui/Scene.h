@@ -84,8 +84,8 @@ private:
     uint32_t                     mUniformStride             = 0;
     WGPURenderPipelineDescriptor mPipelineDesc              = {};
     WGPUShaderModule             mShaderModule              = {};
-    std::vector<std::filesystem::path> mShaderPaths;
-    std::filesystem::file_time_type mLastShaderWriteTime;
+    std::vector<std::filesystem::path> mShaderPaths         = {};
+    std::filesystem::file_time_type mLastShaderWriteTime    = {};
     WGPUTextureView              mTextureView               = nullptr;
     WGPUTexture                  mTexture                   = nullptr;
     MyUniforms                   mUniforms                  = {};

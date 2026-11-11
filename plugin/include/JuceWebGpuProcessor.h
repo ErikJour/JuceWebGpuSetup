@@ -3,6 +3,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "../utils/AudioUtils.h"
 #include "../dsp/Oscillator.h"
+#include "WebGPUSynth.h"
 
 namespace ParameterID {
 #define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
@@ -53,28 +54,26 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-    void triggerNote(juce::AudioBuffer<float>& buffer);
-
-
+    void processSequencer(juce::AudioBuffer<float>& buffer);
 
     //==============================================================================
-    juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout() };
+    juce::AudioProcessorValueTreeState apvts {*this,
+                                              nullptr,
+                                              "Parameters",
+                                              createParameterLayout() };
     bool mStrikeNote {false};
     bool mSeqOn {false};
-    uint32_t mSequencerClick = 0;
+    uint32_t mSequencerClick      = 0;
     uint32_t mNoteLengthInSamples = 25000;
-
-    uint32_t mCount = 0;
-
+    uint32_t mCount               = 0;
 
 private:
     Oscillator mOscillator{};
     juce::AudioParameterBool*  strikeNoteParam{};
     juce::AudioParameterBool*  sequencerOnParam{};
-    double mSampleRate = 44100;
-
+    double mSampleRate    = 44100;
     uint32_t mTickAdvance = 0;
-    uint32_t mSampleTick = 0;
+    uint32_t mSampleTick  = 0;
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     void valueTreePropertyChanged(juce::ValueTree&, const juce::Identifier&) override { parametersChanged.store(true); }

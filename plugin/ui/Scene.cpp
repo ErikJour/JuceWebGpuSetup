@@ -107,8 +107,8 @@ bool Scene::createPipeline()
     //Release bind group, uniform buffer, and pipeline so we can reset these
     //====================================================================================
     if (mBindGroup)     { wgpuBindGroupRelease(mBindGroup);     mBindGroup     = nullptr; }
-    if (mUniformBuffer) { wgpuBufferRelease(mUniformBuffer);    mUniformBuffer = nullptr; }
-    if (mPipeline)      { wgpuRenderPipelineRelease(mPipeline); mPipeline      = nullptr; }
+    if (mUniformBuffer) { wgpuBufferRelease(mUniformBuffer);    mUniformBuffer    = nullptr; }
+    if (mPipeline)      { wgpuRenderPipelineRelease(mPipeline); mPipeline   = nullptr; }
     //====================================================================================
     //Rules for sending CPU data to the GPU
     //====================================================================================
@@ -529,6 +529,7 @@ void Scene::initializeBottomCenterPlane()
     mBottomCenterVertexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
     wgpuQueueWriteBuffer(mQueue, mBottomCenterVertexBuffer, 0, vertices.data(), bd.size);
     bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
+
     bd.size            = indices.size() * sizeof(planeIndex);
     mBottomCenterIndexBuffer  = wgpuDeviceCreateBuffer(mDevice, &bd);
     wgpuQueueWriteBuffer(mQueue, mBottomCenterIndexBuffer, 0, indices.data(), bd.size);
