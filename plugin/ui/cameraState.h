@@ -20,7 +20,7 @@ struct CameraState {
     float posZ   = 2.0f;
 
     static constexpr float eyeY        = 0.02f;  // fixed eye height
-    static constexpr float kWallRadius = 2.0f;  // clamp radius (floor edge is 0.95)
+    static constexpr float kWallRadius = 1.f;  // clamp radius (floor edge is 0.95)
 };
 
 struct DragState {

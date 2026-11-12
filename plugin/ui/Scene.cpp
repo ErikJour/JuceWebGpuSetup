@@ -453,9 +453,12 @@ void Scene::onScroll(const float deltaX, const float deltaY)
     const float r = sqrtf(mCameraState.posX * mCameraState.posX +
                           mCameraState.posZ * mCameraState.posZ);
 
+    if (r > CameraState::kWallRadius)
+    {
         const float inv    = CameraState::kWallRadius / r;
         mCameraState.posX *= inv;
         mCameraState.posZ *= inv;
+    }
 
     updateViewMatrix();
 }
