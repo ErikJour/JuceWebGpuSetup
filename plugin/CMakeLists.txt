@@ -53,8 +53,6 @@ target_sources(JuceWebGpuSetup
         geometries/SphereGeometry.cpp
         geometries/PlaneGeometry.cpp
         dsp/Oscillator.cpp
-        dsp/WebGPUSynth.cpp
-        dsp/WebGPUVoice.cpp
 )
 
 target_include_directories(JuceWebGpuSetup

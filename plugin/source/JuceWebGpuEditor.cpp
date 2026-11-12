@@ -65,7 +65,7 @@ void JuceWebGpuProcessorEditor::timerCallback()
 {
     if (mStartTimeSet) {
         const double elapsed = (juce::Time::getMillisecondCounterHiRes() - mStartTimeMs) * 0.001;
-        mWebGpuWindow.getScene().renderFrame(elapsed);
+        mWebGpuWindow.getScene().renderFrame((float) elapsed);
     }
         startSequencer();
 }
@@ -94,7 +94,7 @@ void JuceWebGpuProcessorEditor::resized() {}
 void JuceWebGpuProcessorEditor::startSequencer()
 {
     //Pass this to our webgpu window
-    mTick = processorRef.mSequencerClick;
+    mTick = static_cast<uint32_t>(processorRef.mSequencerClick.load(std::memory_order_relaxed));
     mWebGpuWindow.getScene().getSequencerInterval(mTick);
 }
 

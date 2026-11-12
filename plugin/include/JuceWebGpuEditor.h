@@ -41,10 +41,10 @@ private:
     uint32_t mTick                = 0;
 
     //Button
-    std::unique_ptr<juce::ParameterAttachment> buttonAttachment;  // param→UI binding
+    std::unique_ptr<juce::ParameterAttachment> buttonAttachment;
     bool mButtonOn = false;
     //Strike Note
-    std::unique_ptr<juce::ParameterAttachment> strikeNoteAttachment;  // param→UI binding
+    std::unique_ptr<juce::ParameterAttachment> strikeNoteAttachment;
     bool mStrikeNote = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JuceWebGpuProcessorEditor)

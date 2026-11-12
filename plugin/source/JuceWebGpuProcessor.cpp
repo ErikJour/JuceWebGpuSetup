@@ -1,7 +1,7 @@
 #include "../include/JuceWebGpuProcessor.h"
 #include "../include/JuceWebGpuEditor.h"
 
-
+#define BPM 80
 
 //==============================================================================
 JuceWebGpuProcessor::JuceWebGpuProcessor()
@@ -15,11 +15,14 @@ JuceWebGpuProcessor::JuceWebGpuProcessor()
                        )
 {
     apvts.state.addListener(this);
-    mSequencerClick = 0;
-    mCount = 0;
 
-    castParameter(apvts, ParameterID::strikeNote, strikeNoteParam);
-    castParameter(apvts, ParameterID::sequencerOn, sequencerOnParam);
+    //Initialize sequencer click, count, and samplerate
+    mSequencerClick = 0;
+    mSampleRate     = 48000;
+
+    //Pass apvts by reference, get the param id, store in our member pointer
+    castParameter(apvts, ParameterID::strikeNote, mStrikeNoteParam);
+    castParameter(apvts, ParameterID::sequencerOn, mSequencerOnParam);
 }
 
 JuceWebGpuProcessor::~JuceWebGpuProcessor()
@@ -95,14 +98,17 @@ void JuceWebGpuProcessor::changeProgramName (int index, const juce::String& newN
 //==============================================================================
 void JuceWebGpuProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    uint32_t bpm = 80;
-    mOscillator.setSampleRate(sampleRate);
-    mTickAdvance = static_cast<uint32_t>(sampleRate * 60 / bpm); //33075 samples
-    mNoteLengthInSamples = 25000;
-    mOscillator.setFrequency(300.0f);
-    parametersChanged.store(true);
     juce::ignoreUnused ( samplesPerBlock);
     mSampleRate = sampleRate;
+
+    //Our tick should advance every 80 times per minute, or every 33075 samples
+    mTickAdvance = static_cast<uint32_t>(sampleRate * 60 / BPM);
+
+    //Oscillator prepare
+    mOscillator.setFrequency(300.0f);
+    mOscillator.setSampleRate(sampleRate);
+
+    parametersChanged.store(true);
 }
 
 void JuceWebGpuProcessor::releaseResources(){}
@@ -129,7 +135,9 @@ bool JuceWebGpuProcessor::isBusesLayoutSupported (const BusesLayout& layouts) co
 void JuceWebGpuProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                                juce::MidiBuffer& midiMessages)
 {
+    juce::ignoreUnused ( midiMessages);
     juce::ScopedNoDenormals noDenormals;
+
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
@@ -140,40 +148,10 @@ void JuceWebGpuProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     if (parametersChanged.compare_exchange_strong(expected, false))
         update();
 
-
+    //If the sequencer is on, hand the buffer to the sequencer, otherwise reset the state
+    mSeqOn = mSequencerOnParam->get();
     if (mSeqOn) { processSequencer(buffer); }
-}
-
-void JuceWebGpuProcessor::processSequencer(juce::AudioBuffer<float>& buffer)
-{
-    //First note or 0 index is messed up
-
-    //Looping through incoming samples
-    for (int i = 0; i < buffer.getNumSamples(); i++) {
-
-        //Our sequencer is turned on
-        if (mSeqOn) {
-            //sampleTick equals 33075
-            if (mSampleTick == mTickAdvance) {
-                mSequencerClick++;
-                //Voice note on
-                mOscillator.processBuffer(buffer.getWritePointer(0), buffer.getNumSamples());
-
-                //Increase the click to the backend
-                if (mSequencerClick > 5) { mSequencerClick = 0; }
-                mSampleTick = 0;
-            }
-            if (mSampleTick == 0) {
-                mSampleTick = 0;
-                //voice note off
-                mOscillator.reset();
-            }
-            mSampleTick++;
-        } else {
-            mSampleTick = 0;
-            mOscillator.reset();
-        }
-    }
+    else        { resetSequencer(buffer); }
 }
 
 //==============================================================================
@@ -216,13 +194,33 @@ juce::AudioProcessorValueTreeState::ParameterLayout JuceWebGpuProcessor::createP
 
 void JuceWebGpuProcessor::update() {
 
-    bool onOff         = strikeNoteParam->get();
+    bool onOff         = mStrikeNoteParam->get();
     mStrikeNote        = onOff;
 
-    bool seqOnOff      = sequencerOnParam->get();
+    bool seqOnOff      = mSequencerOnParam->get();
     mSeqOn             = seqOnOff;
 }
 
+void JuceWebGpuProcessor::processSequencer (juce::AudioBuffer<float>& buffer)
+{
+    for (int i = 0; i < buffer.getNumSamples(); ++i)
+    {
+        if (++mSampleTick >= mTickAdvance)
+        {
+            mSampleTick = 0;
+            mSequencerClick.store ((mSequencerClick.load (std::memory_order_relaxed) + 1) % 6,
+                                   std::memory_order_relaxed);
+        }
+    }
+}
+
+void JuceWebGpuProcessor::resetSequencer(juce::AudioBuffer<float>& buffer)
+{
+    mSequencerClick = 0;
+    mSampleTick     = 0;
+    mOscillator.reset();
+    buffer.clear();
+}
 
 //==============================================================================
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
