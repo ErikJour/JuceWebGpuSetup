@@ -14,6 +14,8 @@
 #include "shaderPaths.h"
 #include "SphereGeometry.h"
 #include "PlaneGeometry.h"
+#include "cameraState.h"
+#include "cameraHelper.h"
 
 #define WGPU_STR(s) WGPUStringView { s, sizeof(s) -1 };
 static constexpr uint32_t materialCount = 7;
@@ -28,6 +30,7 @@ public:
     void setSurfaceFormat(WGPUTextureFormat format);
     void setSurfaceSize(uint32_t width, uint32_t height);
     void setShaderModule(WGPUShaderModule shaderModule);
+    void setCameraState(const CameraState& s);
     void terminate();
     //===================================================================================
     bool createShader();
@@ -56,6 +59,10 @@ public:
     void initializeBottomLeftPlane();
     void initializeBottomCenterPlane();
     void initializeBottomRightPlane();
+    void updateViewMatrix();
+    void onScroll(const float deltaX, const float deltaY);
+
+
     //===================================================================================
     //Public Getter Functions
     //===================================================================================
@@ -113,6 +120,12 @@ private:
     WGPUBuffer                   mBottomRightVertexBuffer        = nullptr;
     WGPUBuffer                   mBottomRightIndexBuffer         = nullptr;
     uint32_t                     mBottomRightIndexCount          = 0;
+
+    //Camera
+    CameraState mCameraState;
+    float mView[16]{}, mProj[16]{};
+    float mInvView[16]{}, mInvProj[16]{};
+    DragState mDrag;
 
 };
 

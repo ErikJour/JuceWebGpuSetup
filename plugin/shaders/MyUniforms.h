@@ -18,6 +18,25 @@ struct MyUniforms {
     uint32_t materialId;
     float    pressed;
     uint32_t tick;
+    float    modelMatrix[16];
+    float    viewProjMatrix[16];
+    float    aspectRatio;
+    float    projMatrix[16];
+    float    cameraPosition[3];
+    float    pad[4];
+};
+
+//static_assert(sizeof(MyUniforms) % 16              == 0);
+//static_assert(offsetof(MyUniforms, modelMatrix)    == 112);
+//static_assert(offsetof(MyUniforms, materialId)     == 312);
+static_assert(offsetof(MyUniforms, modelMatrix)    % 16 == 0);
+static_assert(offsetof(MyUniforms, viewProjMatrix) % 16 == 0);
+
+static constexpr float kIdentity[16] = {
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
 };
 
 static_assert(sizeof(MyUniforms) % 4 == 0);

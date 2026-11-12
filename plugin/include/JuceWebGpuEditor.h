@@ -23,6 +23,8 @@ public:
     void resetSequencer();
     void initializeButton();
     void initializeStrikeNote();
+    void mouseWheelMove(const juce::MouseEvent& e,
+                        const juce::MouseWheelDetails& wheel) override;
 
 
 private:

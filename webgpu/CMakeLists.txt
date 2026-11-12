@@ -12,6 +12,8 @@ add_library(webgpu INTERFACE
 		../plugin/ui/ResourceManager.h
 		../plugin/geometries/PlaneGeometry.cpp
 		../plugin/geometries/PlaneGeometry.h
+        ../plugin/ui/cameraState.h
+		../plugin/ui/cameraHelper.h
 )
 
 if (EMSCRIPTEN)

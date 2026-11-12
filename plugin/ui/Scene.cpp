@@ -16,6 +16,8 @@ void Scene::setSurfaceSize(const uint32_t width, const uint32_t height)       { 
                                                                                 mHeight        = height;       }
 void Scene::setShaderModule(const WGPUShaderModule shaderModule)              { mShaderModule  = shaderModule; }
 void Scene::setPipelineDesc(const WGPURenderPipelineDescriptor &pipelineDesc) { mPipelineDesc  = pipelineDesc; }
+void Scene::setCameraState(const CameraState& s)                               { mCameraState = s; updateViewMatrix(); }
+
 void Scene::terminate()
 {
     if (mBottomCenterIndexBuffer)   { wgpuBufferRelease(mBottomCenterIndexBuffer); mBottomCenterIndexBuffer   = nullptr; }
@@ -164,7 +166,7 @@ bool Scene::createPipeline()
     //Allocate GPU Memory
     //====================================================================================
     WGPUBufferDescriptor bufferDesc = {};
-    bufferDesc.label               = { "Uniform buffer", strlen("Uniform buffer") };
+    bufferDesc.label                = { "Uniform buffer", strlen("Uniform buffer") };
     bufferDesc.size                 = materialCount *  mUniformStride;
     bufferDesc.usage                = WGPUBufferUsage_Uniform | WGPUBufferUsage_CopyDst;
     mUniformBuffer                  = wgpuDeviceCreateBuffer(mDevice, &bufferDesc);
@@ -247,11 +249,19 @@ std::pair<WGPUSurfaceTexture, WGPUTextureView> Scene::getNextSurfaceViewData() c
 void Scene::setUniforms()
 {
     //Used for the on / off button interactions
-    mUniforms.pressed = buttonClicked;
+    mUniforms.pressed     = buttonClicked;
+    mUniforms.aspectRatio = static_cast<float>(mWidth) / static_cast<float>(mHeight);
+    mUniforms.cameraPosition[0]         = mCameraState.posX;
+    mUniforms.cameraPosition[1]         = CameraState::eyeY;
+    mUniforms.cameraPosition[2]         = mCameraState.posZ;
 
+    updateViewMatrix();
     //Assign our materials here
     for (uint32_t m = 0; m < materialCount; m++) {
         mUniforms.materialId = m;
+
+        std::memcpy(mUniforms.modelMatrix, kIdentity, sizeof(kIdentity));
+
         wgpuQueueWriteBuffer(mQueue, mUniformBuffer,
                              m * mUniformStride, &mUniforms, sizeof(MyUniforms));
     }
@@ -363,12 +373,6 @@ void Scene::setMeshBuffers(WGPUBuffer vertexBuffer, WGPUBuffer indexBuffer, uint
 
 void Scene::initializeScene() {
 
-    initializeTopLeftPlane();
-    initializeTopCenterPlane();
-    initializeTopRightPlane();
-    initializeBottomLeftPlane();
-    initializeBottomCenterPlane();
-    initializeBottomRightPlane();
     initializeOnOffButton();
 }
 
@@ -379,50 +383,6 @@ void Scene::renderMeshes(const WGPURenderPassEncoder renderPass) const {
                    mOnOffButtonIndexBuffer,
                    mOnOffButtonIndexCount,
                    MAT_ONOFFBUTTON,
-                   renderPass);
-    //==================
-    //Sequencer Cubes
-    //==================
-    //Top Left
-    setMeshBuffers(mTopLeftVertexBuffer,
-                   mTopLeftIndexBuffer,
-                   mTopLeftIndexCount,
-                   TOPLEFTCUBE,
-                   renderPass);
-
-    //Top Center
-    setMeshBuffers(mTopCenterVertexBuffer,
-                   mTopCenterIndexBuffer,
-                   mTopCenterIndexCount,
-                   TOPCENTERCUBE,
-                   renderPass);
-
-    //Top Right
-    setMeshBuffers(mTopRightVertexBuffer,
-                   mTopRightIndexBuffer,
-                   mTopRightIndexCount,
-                   TOPRIGHTCUBE,
-                   renderPass);
-
-    //Bottom left
-    setMeshBuffers(mBottomLeftVertexBuffer,
-                   mBottomLeftIndexBuffer,
-                   mBottomLeftIndexCount,
-                   BOTTOMLEFTCUBE,
-                   renderPass);
-
-    //Bottom center
-    setMeshBuffers(mBottomCenterVertexBuffer,
-                   mBottomCenterIndexBuffer,
-                   mBottomCenterIndexCount,
-                   BOTTOMCENTERCUBE,
-                   renderPass);
-
-    //Bottom right
-    setMeshBuffers(mBottomRightVertexBuffer,
-                   mBottomRightIndexBuffer,
-                   mBottomRightIndexCount,
-                   BOTTOMRIGHTCUBE,
                    renderPass);
 }
 
@@ -444,115 +404,6 @@ void Scene::initializeOnOffButton() {
     wgpuQueueWriteBuffer(mQueue, mOnOffButtonIndexBuffer, 0, indices.data(), bd.size);
 }
 
-void Scene::initializeTopLeftPlane()
-{
-    std::vector<PlaneVertex> vertices;
-    std::vector<planeIndex>  indices;
-
-    PlaneGeometry::buildPlane(vertices, indices, 1, 1, 0.2f, 16, 16);
-    WGPUBufferDescriptor bd{};
-    mTopLeftIndexCount   = static_cast<uint32_t>(indices.size());
-    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-    bd.size            = vertices.size() * sizeof(PlaneVertex);
-    mTopLeftVertexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
-    wgpuQueueWriteBuffer(mQueue, mTopLeftVertexBuffer, 0, vertices.data(), bd.size);
-    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
-    bd.size            = indices.size() * sizeof(planeIndex);
-    mTopLeftIndexBuffer  = wgpuDeviceCreateBuffer(mDevice, &bd);
-    wgpuQueueWriteBuffer(mQueue, mTopLeftIndexBuffer, 0, indices.data(), bd.size);
-}
-
-void Scene::initializeTopCenterPlane()
-{
-    std::vector<PlaneVertex> vertices;
-    std::vector<planeIndex>  indices;
-
-    PlaneGeometry::buildPlane(vertices, indices, 1, 1, 0.2f, 16, 16);
-    WGPUBufferDescriptor bd{};
-    mTopCenterIndexCount   = static_cast<uint32_t>(indices.size());
-    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-    bd.size            = vertices.size() * sizeof(PlaneVertex);
-    mTopCenterVertexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
-    wgpuQueueWriteBuffer(mQueue, mTopCenterVertexBuffer, 0, vertices.data(), bd.size);
-    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
-    bd.size            = indices.size() * sizeof(planeIndex);
-    mTopCenterIndexBuffer  = wgpuDeviceCreateBuffer(mDevice, &bd);
-    wgpuQueueWriteBuffer(mQueue, mTopCenterIndexBuffer, 0, indices.data(), bd.size);
-}
-
-void Scene::initializeTopRightPlane()
-{
-    std::vector<PlaneVertex> vertices;
-    std::vector<planeIndex>  indices;
-
-    PlaneGeometry::buildPlane(vertices, indices, 1, 1, 0.2f, 16, 16);
-    WGPUBufferDescriptor bd{};
-    mTopRightIndexCount   = static_cast<uint32_t>(indices.size());
-    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-    bd.size            = vertices.size() * sizeof(PlaneVertex);
-    mTopRightVertexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
-    wgpuQueueWriteBuffer(mQueue, mTopRightVertexBuffer, 0, vertices.data(), bd.size);
-    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
-    bd.size            = indices.size() * sizeof(planeIndex);
-    mTopRightIndexBuffer  = wgpuDeviceCreateBuffer(mDevice, &bd);
-    wgpuQueueWriteBuffer(mQueue, mTopRightIndexBuffer, 0, indices.data(), bd.size);
-}
-
-void Scene::initializeBottomLeftPlane()
-{
-    std::vector<PlaneVertex> vertices;
-    std::vector<planeIndex>  indices;
-
-    PlaneGeometry::buildPlane(vertices, indices, 1, 1, 0.2f, 16, 16);
-    WGPUBufferDescriptor bd{};
-    mBottomLeftIndexCount   = static_cast<uint32_t>(indices.size());
-    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-    bd.size            = vertices.size() * sizeof(PlaneVertex);
-    mBottomLeftVertexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
-    wgpuQueueWriteBuffer(mQueue, mBottomLeftVertexBuffer, 0, vertices.data(), bd.size);
-    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
-    bd.size            = indices.size() * sizeof(planeIndex);
-    mBottomLeftIndexBuffer  = wgpuDeviceCreateBuffer(mDevice, &bd);
-    wgpuQueueWriteBuffer(mQueue, mBottomLeftIndexBuffer, 0, indices.data(), bd.size);
-}
-
-void Scene::initializeBottomCenterPlane()
-{
-    std::vector<PlaneVertex> vertices;
-    std::vector<planeIndex>  indices;
-
-    PlaneGeometry::buildPlane(vertices, indices, 1, 1, 0.2f, 16, 16);
-    WGPUBufferDescriptor bd{};
-    mBottomCenterIndexCount   = static_cast<uint32_t>(indices.size());
-    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-    bd.size            = vertices.size() * sizeof(PlaneVertex);
-    mBottomCenterVertexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
-    wgpuQueueWriteBuffer(mQueue, mBottomCenterVertexBuffer, 0, vertices.data(), bd.size);
-    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
-
-    bd.size            = indices.size() * sizeof(planeIndex);
-    mBottomCenterIndexBuffer  = wgpuDeviceCreateBuffer(mDevice, &bd);
-    wgpuQueueWriteBuffer(mQueue, mBottomCenterIndexBuffer, 0, indices.data(), bd.size);
-}
-
-void Scene::initializeBottomRightPlane()
-{
-    std::vector<PlaneVertex> vertices;
-    std::vector<planeIndex>  indices;
-
-    PlaneGeometry::buildPlane(vertices, indices, 1, 1, 0.2f, 16, 16);
-    WGPUBufferDescriptor bd{};
-    mBottomRightIndexCount   = static_cast<uint32_t>(indices.size());
-    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex;
-    bd.size            = vertices.size() * sizeof(PlaneVertex);
-    mBottomRightVertexBuffer = wgpuDeviceCreateBuffer(mDevice, &bd);
-    wgpuQueueWriteBuffer(mQueue, mBottomRightVertexBuffer, 0, vertices.data(), bd.size);
-    bd.usage           = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index;
-    bd.size            = indices.size() * sizeof(planeIndex);
-    mBottomRightIndexBuffer  = wgpuDeviceCreateBuffer(mDevice, &bd);
-    wgpuQueueWriteBuffer(mQueue, mBottomRightIndexBuffer, 0, indices.data(), bd.size);
-}
-
 void Scene::setClick (uint32_t x,uint32_t y)
 {
     //Simple way to select the on / off button. Will upgrade to raycasting eventually.
@@ -565,4 +416,46 @@ void Scene::setClick (uint32_t x,uint32_t y)
 void Scene::getSequencerInterval(uint32_t interval)
 {
     mUniforms.tick = interval;
+}
+
+//==========================================================================================
+void Scene::updateViewMatrix()
+{
+    const float yaw          = mCameraState.angleX;
+    const float cameraX      = mCameraState.posX;
+    constexpr float cameraY  = CameraState::eyeY;
+    const float cameraZ      = mCameraState.posZ;
+
+    // Look target one unit ahead in the yaw direction
+    const float tx       = cameraX + sinf(yaw);
+    const float tz       = cameraZ - cosf(yaw);
+    constexpr float near = 0.1f;
+    constexpr float far  = 8.0f;
+
+    buildLookAt(mView, cameraX, cameraY, cameraZ, tx, cameraY, tz);
+    buildPerspective(mProj, 1.047f, mUniforms.aspectRatio, near, far);
+
+    mulMat4(mUniforms.viewProjMatrix, mProj, mView);
+    std::memcpy(mUniforms.projMatrix, mProj, sizeof(mProj));
+
+    CrossPlatformHelpers::buildInvLookAt(mInvView, cameraX, cameraY, cameraZ, tx, cameraY, tz);
+    CrossPlatformHelpers::buildInvPerspective(mInvProj, 1.047f, mUniforms.aspectRatio, near, far);
+}
+
+void Scene::onScroll(const float deltaX, const float deltaY)
+{
+    const float yaw     = mCameraState.angleX;
+    const float speed   = mDrag.scrollSensitivity;
+
+    mCameraState.posX   +=  sinf(yaw) * deltaY * speed;
+    mCameraState.posZ   += -cosf(yaw) * deltaY * speed;
+    mCameraState.angleX += deltaX * mDrag.turnSensitivity * speed;
+    const float r = sqrtf(mCameraState.posX * mCameraState.posX +
+                          mCameraState.posZ * mCameraState.posZ);
+
+        const float inv    = CameraState::kWallRadius / r;
+        mCameraState.posX *= inv;
+        mCameraState.posZ *= inv;
+
+    updateViewMatrix();
 }

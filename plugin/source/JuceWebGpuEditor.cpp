@@ -138,3 +138,10 @@ void JuceWebGpuProcessorEditor::initializeStrikeNote()
     strikeNoteAttachment->sendInitialUpdate();
 }
 
+void JuceWebGpuProcessorEditor::mouseWheelMove(const juce::MouseEvent& e,
+                                                  const juce::MouseWheelDetails& wheel)
+{
+    juce::ignoreUnused(e);
+    mWebGpuWindow.getScene().onScroll(wheel.deltaX, wheel.deltaY);
+}
+

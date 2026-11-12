@@ -11,10 +11,15 @@ const animatedBlack = vec4(0.0, 0.0, 0.0, 1.0);
 const animatedRed   = vec4(0.5, 0.07, 0.04, 1.0);
 
 struct Uniforms {
-    time:       f32,
-    materialId: u32,
-    pressed:    f32,
-    tick:       u32
+    time:        f32,
+    materialId:  u32,
+    pressed:     f32,
+    tick:        u32,
+    modelMatrix: mat4x4f,
+    viewProjMatrix: mat4x4f,
+    aspectRatio:    f32,
+    projMatrix:     mat4x4f,
+    cameraPosition: vec3f
 }
 
 @group(0) @binding(0) var<uniform> u: Uniforms;

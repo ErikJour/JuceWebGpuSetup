@@ -3,18 +3,16 @@
 //================
 fn vertexOnOff (position: ptr<function, vec3f>) -> vec4f {
 
-    //Place the on / off button in the bottom left of the window
-    let positionShift   = 0.75;
-    position.x -= positionShift;
-    position.y -= positionShift;
-
-    return vec4f(*position, 1.0);
+    //Added model matrix in here
+    let worldPosition = u.modelMatrix * vec4f(*position, 1.0);
+    *position              = worldPosition.xyz;
+    return (projectPerspective(worldPosition.xyz));
 }
 
 fn fragmentOnOff (in: VertexOutput) -> vec4f {
+    let normal      = normalize(in.normal);
+    let baseColor   = vec3f(0.7, 0.65, 0.5);
 
+    return vec4f(baseColor, 1.0);
 
-    //Switch based on pressed value. Erik note -> this a bool.
-    if (u.pressed > 0) { return animatedGreen; }
-    else               { return animatedRed;   }
 }
