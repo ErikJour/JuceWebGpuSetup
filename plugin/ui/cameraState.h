@@ -16,8 +16,8 @@ struct vec2
 
 struct CameraState {
     float angleX = 0.0f;
-    float posX   = 0.75f;
-    float posZ   = 2.0f;
+    float posX   = 0.0f;
+    float posZ   = 1.0f;
 
     static constexpr float eyeY        = 0.02f;  // fixed eye height
     static constexpr float kWallRadius = 1.f;  // clamp radius (floor edge is 0.95)

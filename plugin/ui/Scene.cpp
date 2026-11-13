@@ -300,7 +300,7 @@ void Scene::renderFrame(float time) {
     colorAttachment.view          = targetView;
     colorAttachment.loadOp        = WGPULoadOp_Clear;
     colorAttachment.storeOp       = WGPUStoreOp_Store;
-    colorAttachment.clearValue    = { 0.35, 0.5, 0.6, 1.0 };
+    colorAttachment.clearValue    = WGPUColor(black);
     colorAttachment.depthSlice    = WGPU_DEPTH_SLICE_UNDEFINED;
     //====================================================================================
     //Setup master render pass
@@ -449,7 +449,7 @@ void Scene::onScroll(const float deltaX, const float deltaY)
 
     mCameraState.posX   +=  sinf(yaw) * deltaY * speed;
     mCameraState.posZ   += -cosf(yaw) * deltaY * speed;
-    mCameraState.angleX += deltaX * mDrag.turnSensitivity * speed;
+    mCameraState.angleX -= deltaX * mDrag.turnSensitivity * speed;
     const float r = sqrtf(mCameraState.posX * mCameraState.posX +
                           mCameraState.posZ * mCameraState.posZ);
 

@@ -18,14 +18,14 @@ inline void buildLookAt(float out[16],
     fx/=fl; fy/=fl; fz/=fl;
 
     // right = cross(worldUp=(0,1,0), forward)
-    float rx = fz, ry = 0.0f, rz = -fx;
+    float rx = -fz, ry = 0.0f, rz = fx;
     const float rl = sqrtf(rx*rx + ry*ry + rz*rz);
     rx/=rl; ry/=rl; rz/=rl;
 
     // corrected up = cross(forward, right)
-    const float ux = fy*rz - fz*ry;
-    const float uy = fz*rx - fx*rz;
-    float uz = fx*ry - fy*rx;
+    const float ux = ry*fz - rz*fy;
+    const float uy = rz*fx - rx*fz;
+    const float uz  = rx*fy - ry*fx;
 
     // column-major: out[col*4+row]
     out[0]=rx;   out[4]=ux;   out[8] =-fx;  out[12]=-(rx*ex+ry*ey+rz*ez);

@@ -19,6 +19,7 @@
 
 #define WGPU_STR(s) WGPUStringView { s, sizeof(s) -1 };
 static constexpr uint32_t materialCount = 7;
+static WGPUColor black { 0.0, 0.0, 0.0, 1.0 };
 
 class Scene {
 public:

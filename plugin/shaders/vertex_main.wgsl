@@ -8,23 +8,26 @@ fn projectPerspective(worldPos: vec3f) -> vec4f { return u.viewProjMatrix * vec4
 fn vs_main(in: VertexInput) -> VertexOutput {
 
     var out      : VertexOutput;
-    var position = in.position;
+    var worldPos = (u.modelMatrix * vec4f(in.position, 1.0)).xyz;
 
     //Material-dependant vertex functions.
     switch u.materialId {
-            case MAT_ONOFFBUTTON:  { out.clipPos = vertexOnOff        (&position);    }
-            case TOPLEFTCUBE:      { out.clipPos = vertexTopLeftCube  (&position);    }
-            case TOPCENTERCUBE:    { out.clipPos = vertexTopCenterCube (&position);   }
-            case TOPRIGHTCUBE:     { out.clipPos = vertexTopRightCube (&position);    }
-            case BOTTOMLEFTCUBE:   { out.clipPos = vertexBottomLeftCube (&position);  }
-            case BOTTOMCENTERCUBE: { out.clipPos = vertexBottomCenterCube (&position);}
-            case BOTTOMRIGHTCUBE:  { out.clipPos = vertexBottomRightCube (&position); }
-            default:               { out.clipPos = projectPerspective (position);     }
+            case MAT_ONOFFBUTTON:  { vertexOnOff(&worldPos);           }
+            case TOPLEFTCUBE:      { vertexTopLeftCube(&worldPos);     }
+            case TOPCENTERCUBE:    { vertexTopCenterCube(&worldPos);    }
+            case TOPRIGHTCUBE:     { vertexTopRightCube(&worldPos);    }
+            case BOTTOMLEFTCUBE:   { vertexBottomLeftCube(&worldPos);  }
+            case BOTTOMCENTERCUBE: { vertexBottomCenterCube(&worldPos);}
+            case BOTTOMRIGHTCUBE:  { vertexBottomRightCube(&worldPos); }
+            default:               { }
         }
 
-    out.color    = in.color;
-    out.worldPos = position;
-    out.normal   = in.normal;
+    //This gets into camera and then into clip space
+    out.clipPos   = projectPerspective(worldPos);
+    out.worldPos  = worldPos;
+    out.objectPos = in.position;
+    out.color     = in.color;
+    out.normal    = in.normal;
 
     return out;
 }
